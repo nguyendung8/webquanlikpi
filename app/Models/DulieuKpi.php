@@ -17,9 +17,9 @@ class DulieuKpi extends Model
     protected $fillable = [
         'ID_phancong',
         'ID_nguoigui',
-        'Ngay_gui',
-        'Ketqua_thuchien',
-        'Minh_chung'
+        'Minh_chung',
+        'File_path',
+        'File_name'
     ];
 
     protected $casts = [

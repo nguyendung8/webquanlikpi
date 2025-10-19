@@ -17,6 +17,7 @@ class DanhgiaKpi extends Model
     protected $fillable = [
         'ID_phancong',
         'Ty_le_hoanthanh',
+        'Ketqua_thuchien',
         'Trang_thai',
         'ID_nguoithamdinh',
         'Ngay_thamdinh',

@@ -14,6 +14,7 @@ use App\Models\LoaiKpi;
 use App\Models\DanhgiaKpi;
 use App\Models\DulieuKpi;
 use App\Models\Nhatky;
+use Illuminate\Support\Facades\Storage;
 
 class KpiController extends Controller
 {
@@ -183,7 +184,7 @@ class KpiController extends Controller
     public function viewSubmissions($id)
     {
         $managerId = Auth::id();
-        $phancongKpi = PhancongKpi::with(['kpi', 'user', 'danhgiaKpi'])
+        $phancongKpi = PhancongKpi::with(['kpi', 'user', 'phongban', 'danhgiaKpi'])
             ->where('ID_nguoi_phan_cong', $managerId)
             ->findOrFail($id);
 
@@ -199,10 +200,26 @@ class KpiController extends Controller
         ]);
     }
 
+    // Thêm method downloadFile
+    public function downloadFile($id)
+    {
+        $managerId = Auth::id();
+        $dulieuKpi = DulieuKpi::whereHas('phancongKpi', function($query) use ($managerId) {
+            $query->where('ID_nguoi_phan_cong', $managerId);
+        })->findOrFail($id);
+
+        if (!$dulieuKpi->File_path || !Storage::disk('public')->exists($dulieuKpi->File_path)) {
+            abort(404, 'File không tồn tại');
+        }
+
+        return Storage::disk('public')->download($dulieuKpi->File_path, $dulieuKpi->File_name);
+    }
+
     // Cập nhật đánh giá KPI
     public function updateEvaluation(Request $request, $id)
     {
         $request->validate([
+            'Ketqua_thuchien' => 'required|numeric|min:0',
             'Ty_le_hoanthanh' => 'required|numeric|min:0|max:100',
             'Trang_thai' => 'required|in:cho_duyet,dat,khong_dat',
             'Nhan_xet' => 'nullable|string'
@@ -213,10 +230,11 @@ class KpiController extends Controller
 
         DB::beginTransaction();
         try {
-            // Tạo hoặc cập nhật đánh giá
+            // Sử dụng updateOrCreate để đảm bảo chỉ có 1 đánh giá
             $danhgia = DanhgiaKpi::updateOrCreate(
-                ['ID_phancong' => $id],
+                ['ID_phancong' => $id], // Điều kiện tìm kiếm
                 [
+                    'Ketqua_thuchien' => $request->Ketqua_thuchien,
                     'Ty_le_hoanthanh' => $request->Ty_le_hoanthanh,
                     'Trang_thai' => $request->Trang_thai,
                     'ID_nguoithamdinh' => Auth::id(),
@@ -225,16 +243,19 @@ class KpiController extends Controller
                 ]
             );
 
-            // Ghi nhật ký
-            Nhatky::create([
-                'ID_nguoithuchien' => Auth::id(),
-                'Doi_tuong' => 'danhgia_kpi',
-                'ID_doi_tuong' => $danhgia->ID_danhgia,
-                'Hanh_dong' => 'duyet'
-            ]);
+            // Kiểm tra và cập nhật trạng thái phancong_kpi
+            if ($request->Ty_le_hoanthanh >= 100) {
+                $phancongKpi->update(['Trang_thai' => 'hoan_thanh']);
+            } else if ($request->Ty_le_hoanthanh > 0) {
+                // Nếu có tiến độ nhưng chưa đạt 100% thì chuyển thành đang thực hiện
+                $phancongKpi->update(['Trang_thai' => 'dang_thuc_hien']);
+            }
 
             DB::commit();
-            return response()->json(['success' => true, 'message' => 'Cập nhật đánh giá thành công!']);
+            return response()->json([
+                'success' => true,
+                'message' => $danhgia->wasRecentlyCreated ? 'Tạo đánh giá thành công!' : 'Cập nhật đánh giá thành công!'
+            ]);
 
         } catch (\Exception $e) {
             DB::rollback();

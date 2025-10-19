@@ -92,6 +92,47 @@
         font-size: 12px;
         color: #6c757d;
     }
+
+    .submission-item {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background: #f8f9fa;
+        transition: all 0.3s;
+    }
+
+    .submission-item:hover {
+        background: #e9ecef;
+        transform: translateY(-2px);
+    }
+
+    .submission-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 8px;
+    }
+
+    .submission-date {
+        font-size: 12px;
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    .evaluation-form {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+
+    .input-group-text {
+        background-color: #e9ecef;
+        border-color: #ced4da;
+    }
 </style>
 @endpush
 
@@ -493,6 +534,8 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    // Lưu target để tính toán
+                    window.currentPhancongTarget = data.phancong.kpi.Chi_tieu;
                     displaySubmissions(data.phancong, data.submissions);
                     new bootstrap.Modal(document.getElementById('submissionsModal')).show();
                 } else {
@@ -512,62 +555,108 @@
                 <h6><strong>KPI:</strong> ${phancong.kpi.Ten_kpi}</h6>
                 <p><strong>Người thực hiện:</strong> ${phancong.user ? phancong.user.Ho_ten : 'N/A'}</p>
                 <p><strong>Chỉ tiêu:</strong> ${phancong.kpi.Chi_tieu} ${phancong.kpi.Donvi_tinh}</p>
+                <p><strong>Mô tả:</strong> ${phancong.kpi.Mo_ta || 'Không có mô tả'}</p>
             </div>
         `;
 
         if (submissions.length > 0) {
             html += '<h6>Danh sách bài nộp:</h6>';
+
             submissions.forEach((submission, index) => {
+                const submitDate = new Date(submission.Ngay_gui).toLocaleString('vi-VN');
+                const fileHtml = submission.File_name ?
+                    `<a href="/manager/kpi/file/${submission.ID_dulieu}/download" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-download me-1"></i> ${submission.File_name}
+                    </a>` :
+                    '<span class="text-muted">Không có file đính kèm</span>';
+
                 html += `
                     <div class="submission-item">
                         <div class="submission-header">
                             <strong>Bài nộp #${index + 1}</strong>
-                            <span class="submission-date">${new Date(submission.Ngay_gui).toLocaleString('vi-VN')}</span>
+                            <span class="submission-date">
+                                <i class="fas fa-clock me-1"></i>
+                                ${submitDate}
+                            </span>
                         </div>
-                        <p><strong>Kết quả thực hiện:</strong> ${submission.Ketqua_thuchien}</p>
-                        <p><strong>Minh chứng:</strong> ${submission.Minh_chung || 'Không có'}</p>
-                        <p><strong>Người nộp:</strong> ${submission.nguoigui ? submission.nguoigui.Ho_ten : 'N/A'}</p>
+                        <div class="mb-2">
+                            <strong>Minh chứng:</strong>
+                            <p class="mb-1">${submission.Minh_chung || 'Không có mô tả'}</p>
+                        </div>
+                        <div class="mb-2">
+                            <strong>File đính kèm:</strong>
+                            <div class="mt-1">${fileHtml}</div>
+                        </div>
+                        <div>
+                            <strong>Người nộp:</strong> ${submission.nguoigui ? submission.nguoigui.Ho_ten : 'N/A'}
+                        </div>
                     </div>
                 `;
             });
 
-            // Form đánh giá
+            // Form đánh giá với dữ liệu hiện tại
+            const currentEvaluation = phancong.danhgia_kpi;
             html += `
-                <div class="mt-4">
-                    <h6>Đánh giá KPI:</h6>
+                <div class="mt-4 p-3 bg-light rounded">
+                    <h6><i class="fas fa-clipboard-check text-success me-2"></i>Đánh giá KPI:</h6>
                     <form id="evaluationForm">
                         <input type="hidden" id="evaluation_kpi_id" value="${phancong.ID_Phancong}">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label class="form-label">Tỷ lệ hoàn thành (%)</label>
-                                    <input type="number" class="form-control" id="evaluation_percentage"
-                                           min="0" max="100" step="0.01" required>
+                                    <label class="form-label">Kết quả thực hiện <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="evaluation_result"
+                                               min="0" step="0.01" required placeholder="Nhập số lượng"
+                                               value="${currentEvaluation ? currentEvaluation.Ketqua_thuchien || '' : ''}">
+                                        <span class="input-group-text">${phancong.kpi.Donvi_tinh}</span>
+                                    </div>
+                                    <small class="form-text text-muted">Số lượng đã hoàn thành</small>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label class="form-label">Trạng thái</label>
+                                    <label class="form-label">Tỷ lệ hoàn thành (%) <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" id="evaluation_percentage"
+                                           min="0" max="100" step="0.01" required
+                                           value="${currentEvaluation ? currentEvaluation.Ty_le_hoanthanh || '' : ''}">
+                                    <small class="form-text text-muted">Tự động tính: (Kết quả / Chỉ tiêu) × 100</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Trạng thái <span class="text-danger">*</span></label>
                                     <select class="form-select" id="evaluation_status" required>
-                                        <option value="cho_duyet">Chờ duyệt</option>
-                                        <option value="dat">Đạt</option>
-                                        <option value="khong_dat">Không đạt</option>
+                                        <option value="cho_duyet" ${currentEvaluation && currentEvaluation.Trang_thai === 'cho_duyet' ? 'selected' : ''}>Chờ duyệt</option>
+                                        <option value="dat" ${currentEvaluation && currentEvaluation.Trang_thai === 'dat' ? 'selected' : ''}>Đạt</option>
+                                        <option value="khong_dat" ${currentEvaluation && currentEvaluation.Trang_thai === 'khong_dat' ? 'selected' : ''}>Không đạt</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Nhận xét</label>
-                            <textarea class="form-control" id="evaluation_comment" rows="3"></textarea>
+                            <textarea class="form-control" id="evaluation_comment" rows="3"
+                                      placeholder="Nhận xét về kết quả thực hiện...">${currentEvaluation ? currentEvaluation.Nhan_xet || '' : ''}</textarea>
                         </div>
-                        <button type="button" class="btn btn-success" onclick="submitEvaluation()">
-                            <i class="fas fa-check"></i> Cập nhật đánh giá
-                        </button>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-success" onclick="submitEvaluation()">
+                                <i class="fas fa-check me-1"></i> ${currentEvaluation ? 'Cập nhật đánh giá' : 'Tạo đánh giá'}
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="calculatePercentage()">
+                                <i class="fas fa-calculator me-1"></i> Tính tỷ lệ tự động
+                            </button>
+                        </div>
                     </form>
                 </div>
             `;
         } else {
-            html += '<div class="alert alert-info">Chưa có bài nộp nào từ nhân viên.</div>';
+            html += `
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Chưa có bài nộp nào từ nhân viên.
+                </div>
+            `;
         }
 
         content.innerHTML = html;
@@ -626,9 +715,15 @@
 
     function submitEvaluation() {
         const id = document.getElementById('evaluation_kpi_id').value;
+        const result = document.getElementById('evaluation_result').value;
         const percentage = document.getElementById('evaluation_percentage').value;
         const status = document.getElementById('evaluation_status').value;
         const comment = document.getElementById('evaluation_comment').value;
+
+        if (!result || !percentage) {
+            showAlert('Vui lòng nhập đầy đủ thông tin đánh giá', 'error');
+            return;
+        }
 
         fetch(`/manager/kpi/${id}/evaluation`, {
             method: 'POST',
@@ -637,6 +732,7 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+                Ketqua_thuchien: result, // Thêm dòng này
                 Ty_le_hoanthanh: percentage,
                 Trang_thai: status,
                 Nhan_xet: comment
@@ -683,6 +779,25 @@
                 alert.remove();
             }
         }, 5000);
+    }
+
+    function calculatePercentage() {
+        const resultInput = document.getElementById('evaluation_result');
+        const percentageInput = document.getElementById('evaluation_percentage');
+        const phancongId = document.getElementById('evaluation_kpi_id').value;
+
+        const result = parseFloat(resultInput.value);
+        if (!result || result <= 0) {
+            showAlert('Vui lòng nhập kết quả thực hiện trước', 'warning');
+            return;
+        }
+
+        // Lấy chỉ tiêu từ phancong data (cần lưu trong biến global)
+        const target = window.currentPhancongTarget || 1; // Fallback value
+        const percentage = (result / target) * 100;
+
+        percentageInput.value = Math.min(percentage, 100).toFixed(2);
+        showAlert(`Đã tính tỷ lệ: ${percentage.toFixed(2)}%`, 'success');
     }
 
     // Handle assignment type change

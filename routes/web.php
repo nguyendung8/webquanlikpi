@@ -7,11 +7,15 @@ use App\Http\Controllers\Manager\DashboardController as ManagerDashboardControll
 use App\Http\Controllers\Manager\LoaiKpiController;
 use App\Http\Controllers\Manager\KpiController as ManagerKpiController;
 use App\Http\Controllers\Manager\TasksController as ManagerTasksController;
+use App\Http\Controllers\User\DashboardController as UserDashboardController;
+use App\Http\Controllers\User\TasksController as UserTasksController;
+use App\Http\Controllers\User\CalendarController as UserCalendarController;
 use App\Http\Controllers\KpiController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PhongbanController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\User\KpiController as UserKpiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,7 +46,7 @@ Route::middleware('auth')->group(function () {
             case 2: // Manager
                 return redirect()->route('manager.dashboard.index');
             case 3: // Employee
-                return redirect()->route('my-kpi.index');
+                return redirect()->route('user.dashboard.index');
             default:
                 return redirect()->route('dashboard.index');
         }
@@ -72,6 +76,7 @@ Route::middleware('auth')->group(function () {
         Route::post('kpi/{id}/progress', [ManagerKpiController::class, 'updateProgress'])->name('manager.kpi.progress');
         Route::get('kpi/{id}/submissions', [ManagerKpiController::class, 'viewSubmissions'])->name('manager.kpi.submissions');
         Route::post('kpi/{id}/evaluation', [ManagerKpiController::class, 'updateEvaluation'])->name('manager.kpi.evaluation');
+        Route::get('/kpi/file/{id}/download', [ManagerKpiController::class, 'downloadFile'])->name('manager.kpi.download');
 
         // LoaiKpi Management
         Route::resource('kpi-type', \App\Http\Controllers\Manager\LoaiKpiController::class)->names([
@@ -91,13 +96,20 @@ Route::middleware('auth')->group(function () {
     });
 
     // Employee routes
-    Route::middleware('auth')->group(function () {
-        Route::get('/my-kpi', function () {
-            return view('my-kpi.index');
-        })->name('my-kpi.index');
+    Route::prefix('user')->middleware(['auth', 'employee:employee'])->group(function () {
+        Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard.index');
 
-        Route::get('/tasks', function () {
-            return view('tasks.index');
-        })->name('tasks.index');
+        // KPI Management
+        Route::get('/kpi', [UserKpiController::class, 'index'])->name('user.kpi.index');
+        Route::post('/kpi/{id}/submit', [UserKpiController::class, 'submit'])->name('user.kpi.submit');
+        Route::get('/kpi/file/{id}/download', [UserKpiController::class, 'downloadFile'])->name('user.kpi.download');
+        Route::get('/kpi/{id}/submissions', [UserKpiController::class, 'viewSubmissions'])->name('user.kpi.submissions');
+
+        // Tasks Management
+        Route::get('/tasks', [UserTasksController::class, 'index'])->name('user.tasks.index');
+        Route::post('/tasks/{id}/status', [UserTasksController::class, 'updateStatus'])->name('user.tasks.status');
+
+        // Calendar
+        Route::get('/calendar', [UserCalendarController::class, 'index'])->name('user.calendar.index');
     });
 });

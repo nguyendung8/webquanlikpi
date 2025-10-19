@@ -444,21 +444,27 @@
                     </li>
                 @elseif(Auth::user()->ID_quyen == 3) {{-- Nhân viên --}}
                     <li>
-                        <a href="{{ route('my-kpi.index') }}" class="{{ request()->routeIs('my-kpi.*') ? 'active' : '' }}">
+                        <a href="{{ route('user.dashboard.index') }}" class="{{ request()->routeIs('user.dashboard.*') ? 'active' : '' }}">
                             <i class="fas fa-home"></i>
                             <span>Trang chủ</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('my-kpi.index') }}" class="{{ request()->routeIs('my-kpi.*') ? 'active' : '' }}">
+                        <a href="{{ route('user.kpi.index') }}" class="{{ request()->routeIs('user.kpi.*') ? 'active' : '' }}">
                             <i class="fas fa-clipboard-list"></i>
                             <span>KPI của tôi</span>
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('tasks.index') }}" class="{{ request()->routeIs('tasks.*') ? 'active' : '' }}">
+                        <a href="{{ route('user.tasks.index') }}" class="{{ request()->routeIs('user.tasks.*') ? 'active' : '' }}">
                             <i class="fas fa-tasks"></i>
                             <span>Nhiệm vụ</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('user.calendar.index') }}" class="{{ request()->routeIs('user.calendar.*') ? 'active' : '' }}">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Lịch</span>
                         </a>
                     </li>
                 @endif
