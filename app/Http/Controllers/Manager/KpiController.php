@@ -72,8 +72,8 @@ class KpiController extends Controller
             'Mo_ta' => 'nullable|string',
             'ID_loai_kpi' => 'required|exists:loai_kpi,ID_loai_kpi',
             'assignment_type' => 'required|in:user,department',
-            'ID_user' => 'required_if:assignment_type,user|exists:users,ID_user',
-            'ID_phongban' => 'required_if:assignment_type,department|exists:phongban,ID_phongban',
+            'ID_user' => 'required_if:assignment_type,user|nullable|exists:users,ID_user',
+            'ID_phongban' => 'required_if:assignment_type,department|nullable|exists:phongban,ID_phongban',
             'Ngay_batdau' => 'required|date',
             'Ngay_ketthuc' => 'required|date|after:Ngay_batdau'
         ]);
@@ -94,25 +94,27 @@ class KpiController extends Controller
                 // Phân công cho 1 user
                 $phancong = PhancongKpi::create([
                     'ID_kpi' => $kpi->ID_kpi,
+                    'ID_phongban' => $request->ID_phongban ?? User::find($request->ID_user)->ID_phongban,
                     'ID_user' => $request->ID_user,
                     'ID_nguoi_phan_cong' => Auth::id(),
                     'Ngay_batdau' => $request->Ngay_batdau,
                     'Ngay_ketthuc' => $request->Ngay_ketthuc,
-                    'Trang_thai' => 'chua_thuc_hien'
+                    'ID_loai_kpi' => $request->ID_loai_kpi
                 ]);
 
                 // Ghi nhật ký
                 Nhatky::create([
                     'ID_nguoithuchien' => Auth::id(),
-                    'Doi_tuong' => 'phancong_kpi',
-                    'ID_doi_tuong' => $phancong->ID_Phancong,
-                    'Hanh_dong' => 'them'
+                    'Doi_tuong' => 'user',
+                    'ID_doi_tuong' => $phancong->user->ID_user,
+                    'Hanh_dong' => 'phan cong kpi'
                 ]);
 
             } else {
-                // Phân công cho cả phòng ban
+                // Phân công cho cả phòng ban - chỉ lấy user có role = 3
                 $usersInDept = User::where('ID_phongban', $request->ID_phongban)
                     ->where('Trang_thai', 'hoat_dong')
+                    ->where('ID_quyen', 3)
                     ->get();
 
                 foreach ($usersInDept as $user) {
@@ -123,15 +125,16 @@ class KpiController extends Controller
                         'ID_nguoi_phan_cong' => Auth::id(),
                         'Ngay_batdau' => $request->Ngay_batdau,
                         'Ngay_ketthuc' => $request->Ngay_ketthuc,
-                        'Trang_thai' => 'chua_thuc_hien'
+                        'Trang_thai' => 'chua_thuc_hien',
+                        'ID_loai_kpi' => $request->ID_loai_kpi
                     ]);
 
                     // Ghi nhật ký cho mỗi phân công
                     Nhatky::create([
                         'ID_nguoithuchien' => Auth::id(),
-                        'Doi_tuong' => 'phancong_kpi',
-                        'ID_doi_tuong' => $phancong->ID_Phancong,
-                        'Hanh_dong' => 'them'
+                        'Doi_tuong' => 'user',
+                        'ID_doi_tuong' => $user->ID_user,
+                        'Hanh_dong' => 'phan cong kpi'
                     ]);
                 }
             }
@@ -149,6 +152,7 @@ class KpiController extends Controller
     {
         $managerId = Auth::id();
         $phancongKpi = PhancongKpi::where('ID_nguoi_phan_cong', $managerId)->findOrFail($id);
+        $kpi = Kpi::find($phancongKpi->kpi->ID_kpi);
 
         DB::beginTransaction();
         try {
@@ -160,8 +164,11 @@ class KpiController extends Controller
                 'Hanh_dong' => 'xoa'
             ]);
 
-            // Xóa phân công (sẽ cascade xóa KPI nếu cần)
+            // Xóa phân công
             $phancongKpi->delete();
+
+            // Xóa KPI
+            $kpi->delete();
 
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Xóa KPI thành công!']);

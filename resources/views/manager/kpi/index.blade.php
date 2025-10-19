@@ -325,7 +325,7 @@
                         <label class="form-label">Chọn người dùng <span class="text-danger">*</span></label>
                         <select class="form-select" name="ID_user">
                             <option value="">Chọn người dùng</option>
-                            @foreach(\App\Models\User::where('Trang_thai', 'hoat_dong')->get() as $user)
+                            @foreach(\App\Models\User::where('Trang_thai', 'hoat_dong')->where('ID_quyen', 3)->get() as $user)
                                 <option value="{{ $user->ID_user }}">{{ $user->Ho_ten }} ({{ $user->phongban->Ten_phongban ?? 'N/A' }})</option>
                             @endforeach
                         </select>
@@ -578,7 +578,7 @@
             fetch(`/manager/kpi/${id}`, {
                 method: 'DELETE',
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     'Content-Type': 'application/json'
                 }
             })
@@ -604,7 +604,7 @@
         fetch(`/manager/kpi/${id}/progress`, {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ Trang_thai: status })
@@ -614,7 +614,7 @@
             if (data.success) {
                 showAlert(data.message, 'success');
                 bootstrap.Modal.getInstance(document.getElementById('progressModal')).hide();
-                setTimeout(() => location.reload(), 1500);
+                setTimeout(() => location.reload(), 2000);
             } else {
                 showAlert(data.message, 'error');
             }
@@ -633,7 +633,7 @@
         fetch(`/manager/kpi/${id}/evaluation`, {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -646,7 +646,7 @@
         .then(data => {
             if (data.success) {
                 showAlert(data.message, 'success');
-                setTimeout(() => location.reload(), 1500);
+                setTimeout(() => location.reload(), 2000);
             } else {
                 showAlert(data.message, 'error');
             }
@@ -654,6 +654,35 @@
         .catch(error => {
             showAlert('Có lỗi xảy ra khi cập nhật đánh giá', 'error');
         });
+    }
+
+    function showAlert(message, type) {
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+        const iconClass = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
+
+        const alertHtml = `
+            <div class="alert ${alertClass} alert-dismissible fade show position-fixed"
+                 style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;" role="alert">
+                <i class="${iconClass} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+
+        // Remove existing alerts first
+        const existingAlerts = document.querySelectorAll('.alert.position-fixed');
+        existingAlerts.forEach(alert => alert.remove());
+
+        // Insert new alert
+        document.body.insertAdjacentHTML('beforeend', alertHtml);
+
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            const alert = document.querySelector('.alert.position-fixed');
+            if (alert) {
+                alert.remove();
+            }
+        }, 5000);
     }
 
     // Handle assignment type change
@@ -686,27 +715,58 @@
             e.preventDefault();
 
             const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+
+            // Validate required fields based on assignment type
+            const assignmentType = data.assignment_type;
+            if (assignmentType === 'user' && !data.ID_user) {
+                showAlert('Vui lòng chọn người dùng', 'error');
+                return;
+            }
+            if (assignmentType === 'department' && !data.ID_phongban) {
+                showAlert('Vui lòng chọn phòng ban', 'error');
+                return;
+            }
 
             fetch('/manager/kpi', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Content-Type': 'application/json'
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
-                body: JSON.stringify(Object.fromEntries(formData))
+                body: JSON.stringify(data)
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+
+                // Check if response is HTML (error page)
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('text/html')) {
+                    return response.text().then(html => {
+                        console.log('HTML Response:', html);
+                        throw new Error('Server returned HTML instead of JSON. Check server logs.');
+                    });
+                }
+
+                return response.json();
+            })
             .then(data => {
+                console.log('Response data:', data);
+
                 if (data.success) {
                     showAlert(data.message, 'success');
                     bootstrap.Modal.getInstance(document.getElementById('addKpiModal')).hide();
-                    setTimeout(() => location.reload(), 1500);
+                    // Delay reload để user có thể thấy alert
+                    setTimeout(() => location.reload(), 2000);
                 } else {
                     showAlert(data.message, 'error');
                 }
             })
             .catch(error => {
-                showAlert('Có lỗi xảy ra khi tạo KPI', 'error');
+                console.error('Error:', error);
+                showAlert('Có lỗi xảy ra khi tạo KPI: ' + error.message, 'error');
             });
         });
     });
