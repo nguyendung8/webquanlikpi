@@ -362,6 +362,188 @@
                 opacity: 1;
             }
         }
+
+        /* Notification styles */
+        .notification-dropdown {
+            position: relative;
+        }
+
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .notification-icon:hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .notification-panel {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 350px;
+            max-height: 500px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            z-index: 1000;
+            display: none;
+            overflow: hidden;
+        }
+
+        .notification-panel.show {
+            display: block;
+        }
+
+        .notification-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+        }
+
+        .notification-header h6 {
+            margin: 0;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .notification-list {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .notification-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .notification-item.unread {
+            background-color: #e3f2fd;
+            border-left: 3px solid #2196f3;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .notification-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .notification-details {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .notification-message {
+            color: #6c757d;
+            font-size: 13px;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+
+        .notification-time {
+            color: #adb5bd;
+            font-size: 11px;
+        }
+
+        .notification-type-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .notification-type-phancong_kpi {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .notification-type-review_kpi {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .notification-type-submit_kpi {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .notification-type-phancong_task {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .notification-footer {
+            padding: 10px;
+            border-top: 1px solid #eee;
+            background: #f8f9fa;
+        }
+
+        .empty-notifications {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+
+        .empty-notifications i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
     </style>
     @endpush
     @stack('styles')
@@ -486,9 +668,35 @@
 
                 <div class="header-right">
                     @if (Auth::user()->ID_quyen != 1)
-                        <div class="notification-icon">
-                            <i class="fas fa-bell"></i>
-                            <div class="notification-badge"></div>
+                        <div class="notification-dropdown">
+                            <div class="notification-icon" onclick="toggleNotifications()">
+                                <i class="fas fa-bell"></i>
+                                <div class="notification-badge" id="notificationBadge">0</div>
+                            </div>
+
+                            <div class="notification-panel" id="notificationPanel">
+                                <div class="notification-header">
+                                    <h6>Thông báo</h6>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="markAllAsRead()">
+                                        <i class="fas fa-check-double"></i> Đọc tất cả
+                                    </button>
+                                </div>
+
+                                <div class="notification-list" id="notificationList">
+                                    <div class="text-center p-3">
+                                        <div class="spinner-border spinner-border-sm" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <p class="text-muted mt-2">Đang tải thông báo...</p>
+                                    </div>
+                                </div>
+
+                                <div class="notification-footer">
+                                    <button class="btn btn-sm btn-link w-100" onclick="loadMoreNotifications()" id="loadMoreBtn" style="display: none;">
+                                        <i class="fas fa-chevron-down"></i> Xem thêm
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     @endif
 
@@ -523,32 +731,109 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    @push('scripts')
-    @endpush
-    @stack('scripts')
+
     <script>
-// Cập nhật title theo URL hiện tại
-document.addEventListener('DOMContentLoaded', function() {
-    const path = window.location.pathname;
-    const titleElement = document.getElementById('pageTitle');
+// Simple notification toggle
+function toggleNotifications() {
+    const panel = document.getElementById('notificationPanel');
+    if (panel) {
+        panel.classList.toggle('show');
 
-    const titleMap = {
-        '/dashboard': 'Trang chủ',
-        '/kpi': 'Quản lý KPIs',
-        '/users': 'Quản lý Người dùng',
-        '/phongban': 'Quản lý Phòng ban',
-        '/reports': 'Báo cáo',
-        '/activity': 'Nhật ký hoạt động'
-    };
-
-    // Tìm title phù hợp
-    for (const [pathKey, title] of Object.entries(titleMap)) {
-        if (path.includes(pathKey)) {
-            titleElement.textContent = title;
-            break;
+        // Load notifications when panel opens
+        if (panel.classList.contains('show')) {
+            loadNotifications();
         }
     }
+}
+
+// Simple load notifications
+async function loadNotifications() {
+    try {
+        const response = await fetch('/notifications');
+        const data = await response.json();
+
+        const notificationList = document.getElementById('notificationList');
+        if (data.data && data.data.length > 0) {
+            notificationList.innerHTML = data.data.map(notification => `
+                <div class="notification-item ${notification.Da_xem ? '' : 'unread'}" onclick="markAsRead(${notification.ID_thongbao})">
+                    <div class="notification-content">
+                        <div class="notification-avatar">
+                            ${notification.nguoigui ? notification.nguoigui.Ho_ten.charAt(0) : 'S'}
+                        </div>
+                        <div class="notification-details">
+                            <h6>${notification.Tieu_de}</h6>
+                            <p>${notification.Noi_dung}</p>
+                            <small class="text-muted">${new Date(notification.Ngay_gui).toLocaleString('vi-VN')}</small>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            notificationList.innerHTML = '<div class="text-center p-3"><p class="text-muted">Chưa có thông báo</p></div>';
+        }
+    } catch (error) {
+        console.error('Error loading notifications:', error);
+        document.getElementById('notificationList').innerHTML = '<div class="text-center p-3"><p class="text-danger">Lỗi tải thông báo</p></div>';
+    }
+}
+
+// Mark as read
+async function markAsRead(id) {
+    try {
+        await fetch(`/notifications/${id}/read`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json'
+            }
+        });
+
+        // Reload notifications
+        loadNotifications();
+    } catch (error) {
+        console.error('Error marking as read:', error);
+    }
+}
+
+// Mark all as read
+async function markAllAsRead() {
+    try {
+        const response = await fetch('/notifications/mark-all-read', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            loadNotifications();
+        }
+    } catch (error) {
+        console.error('Error marking all as read:', error);
+    }
+}
+
+// Update unread count
+async function updateUnreadCount() {
+    try {
+        const response = await fetch('/notifications/unread-count');
+        const data = await response.json();
+
+        const badge = document.getElementById('notificationBadge');
+        if (badge) {
+            badge.textContent = data.count || 0;
+            badge.style.display = data.count > 0 ? 'block' : 'none';
+        }
+    } catch (error) {
+        console.error('Error updating unread count:', error);
+    }
+}
+
+// Load unread count on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateUnreadCount();
 });
 </script>
-</body>
-</html>
+
+@stack('scripts')

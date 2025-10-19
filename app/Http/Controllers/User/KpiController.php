@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\PhancongKpi;
 use App\Models\DulieuKpi;
+use App\Models\Thongbao;
 
 class KpiController extends Controller
 {
@@ -66,7 +67,7 @@ class KpiController extends Controller
             $filePath = $file->store('kpi-submissions/' . $userId, 'public');
         }
 
-        // Tạo bản ghi dữ liệu KPI (không có Ketqua_thuchien)
+        // Tạo bản ghi dữ liệu KPI
         DulieuKpi::create([
             'ID_phancong' => $id,
             'ID_nguoigui' => $userId,
@@ -74,6 +75,16 @@ class KpiController extends Controller
             'Minh_chung' => $request->Minh_chung,
             'File_path' => $filePath,
             'File_name' => $fileName
+        ]);
+
+        // Thông báo cho manager về bài nộp
+        Thongbao::create([
+            'ID_nguoigui' => $userId,
+            'ID_nguoinhan' => $phancongKpi->ID_nguoi_phan_cong,
+            'Tieu_de' => 'Nộp bài KPI',
+            'Noi_dung' => "Nhân viên đã nộp bài cho KPI: '{$phancongKpi->kpi->Ten_kpi}'. Vui lòng kiểm tra và đánh giá.",
+            'Loai_thongbao' => 'submit_kpi',
+            'Da_xem' => 0
         ]);
 
         return response()->json([

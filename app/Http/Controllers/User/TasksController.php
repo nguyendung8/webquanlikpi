@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Tasks;
+use App\Models\Thongbao;
 
 class TasksController extends Controller
 {
@@ -57,11 +58,11 @@ class TasksController extends Controller
         $userId = Auth::id();
         $task = Tasks::where('ID_user_duocgiao', $userId)->findOrFail($id);
 
-        $task->update(['Trang_thai' => $request->Trang_thai]);
+        $oldStatus = $task->Trang_thai;
+        $newStatus = $request->Trang_thai;
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Cập nhật trạng thái nhiệm vụ thành công!'
-        ]);
+        $task->update(['Trang_thai' => $newStatus]);
+        
+        return response()->json(['success' => true, 'message' => 'Cập nhật trạng thái thành công!']);
     }
 }

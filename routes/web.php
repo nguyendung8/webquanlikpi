@@ -16,6 +16,8 @@ use App\Http\Controllers\PhongbanController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\User\KpiController as UserKpiController;
+use App\Models\Thongbao;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -112,4 +114,11 @@ Route::middleware('auth')->group(function () {
         // Calendar
         Route::get('/calendar', [UserCalendarController::class, 'index'])->name('user.calendar.index');
     });
+
+    // Thêm routes cho thông báo
+    Route::get('/notifications', [NotificationController::class, 'getNotifications'])->name('notifications');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount'])->name('notifications.unread-count');
 });

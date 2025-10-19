@@ -15,6 +15,7 @@ use App\Models\DanhgiaKpi;
 use App\Models\DulieuKpi;
 use App\Models\Nhatky;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Thongbao;
 
 class KpiController extends Controller
 {
@@ -92,7 +93,7 @@ class KpiController extends Controller
             ]);
 
             if ($request->assignment_type === 'user') {
-                // Phân công cho 1 user
+                // Phân công cho người dùng cụ thể
                 $phancong = PhancongKpi::create([
                     'ID_kpi' => $kpi->ID_kpi,
                     'ID_phongban' => $request->ID_phongban ?? User::find($request->ID_user)->ID_phongban,
@@ -101,6 +102,16 @@ class KpiController extends Controller
                     'Ngay_batdau' => $request->Ngay_batdau,
                     'Ngay_ketthuc' => $request->Ngay_ketthuc,
                     'ID_loai_kpi' => $request->ID_loai_kpi
+                ]);
+
+                // Thông báo cho user được phân công
+                Thongbao::create([
+                    'ID_nguoigui' => Auth::id(),
+                    'ID_nguoinhan' => $request->ID_user,
+                    'Tieu_de' => 'Phân công KPI mới',
+                    'Noi_dung' => "Bạn đã được phân công KPI: {$request->Ten_kpi}. Deadline: {$request->Ngay_ketthuc}",
+                    'Loai_thongbao' => 'phancong_kpi',
+                    'Da_xem' => 0
                 ]);
 
                 // Ghi nhật ký
@@ -128,6 +139,16 @@ class KpiController extends Controller
                         'Ngay_ketthuc' => $request->Ngay_ketthuc,
                         'Trang_thai' => 'chua_thuc_hien',
                         'ID_loai_kpi' => $request->ID_loai_kpi
+                    ]);
+
+                    // Thông báo cho từng user trong phòng ban
+                    Thongbao::create([
+                        'ID_nguoigui' => Auth::id(),
+                        'ID_nguoinhan' => $user->ID_user,
+                        'Tieu_de' => 'Phân công KPI mới',
+                        'Noi_dung' => "Bạn đã được phân công KPI: {$request->Ten_kpi}. Deadline: {$request->Ngay_ketthuc}",
+                        'Loai_thongbao' => 'phancong_kpi',
+                        'Da_xem' => 0
                     ]);
 
                     // Ghi nhật ký cho mỗi phân công
@@ -250,6 +271,16 @@ class KpiController extends Controller
                 // Nếu có tiến độ nhưng chưa đạt 100% thì chuyển thành đang thực hiện
                 $phancongKpi->update(['Trang_thai' => 'dang_thuc_hien']);
             }
+
+            // Thông báo cho user về đánh giá
+            Thongbao::create([
+                'ID_nguoigui' => Auth::id(),
+                'ID_nguoinhan' => $phancongKpi->ID_user,
+                'Tieu_de' => 'Đánh giá KPI',
+                'Noi_dung' => "KPI '{$phancongKpi->kpi->Ten_kpi}' đã được đánh giá. Tỷ lệ hoàn thành: {$request->Ty_le_hoanthanh}%. Trạng thái: " . ucfirst(str_replace('_', ' ', $request->Trang_thai)),
+                'Loai_thongbao' => 'review_kpi',
+                'Da_xem' => 0
+            ]);
 
             DB::commit();
             return response()->json([

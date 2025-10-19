@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 18, 2025 at 12:23 PM
+-- Generation Time: Oct 19, 2025 at 08:33 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -31,20 +31,20 @@ CREATE TABLE `danhgia_kpi` (
   `ID_danhgia` int(11) NOT NULL,
   `ID_phancong` int(11) NOT NULL,
   `Ty_le_hoanthanh` decimal(5,2) DEFAULT NULL,
+  `Ketqua_thuchien` decimal(10,0) DEFAULT NULL,
   `Trang_thai` enum('cho_duyet','dat','khong_dat') DEFAULT 'cho_duyet',
   `ID_nguoithamdinh` int(11) DEFAULT NULL,
   `Ngay_thamdinh` timestamp NULL DEFAULT NULL,
-  `Nhan_xet` text DEFAULT NULL
+  `Nhan_xet` text DEFAULT NULL,
+  `updated_at` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `danhgia_kpi`
 --
 
-INSERT INTO `danhgia_kpi` (`ID_danhgia`, `ID_phancong`, `Ty_le_hoanthanh`, `Trang_thai`, `ID_nguoithamdinh`, `Ngay_thamdinh`, `Nhan_xet`) VALUES
-(7, 202, 90.00, 'cho_duyet', NULL, NULL, NULL),
-(8, 204, 50.00, 'khong_dat', 1, '2025-10-14 05:30:26', NULL),
-(9, 205, 100.00, 'dat', 1, '2025-10-14 05:30:26', NULL);
+INSERT INTO `danhgia_kpi` (`ID_danhgia`, `ID_phancong`, `Ty_le_hoanthanh`, `Ketqua_thuchien`, `Trang_thai`, `ID_nguoithamdinh`, `Ngay_thamdinh`, `Nhan_xet`, `updated_at`) VALUES
+(10, 204, 100.00, 5, 'dat', 6, '2025-10-18 23:24:16', 'ok roi nhe', NULL);
 
 -- --------------------------------------------------------
 
@@ -57,20 +57,19 @@ CREATE TABLE `dulieu_kpi` (
   `ID_phancong` int(11) NOT NULL,
   `ID_nguoigui` int(11) NOT NULL,
   `Ngay_gui` timestamp NOT NULL DEFAULT current_timestamp(),
-  `Ketqua_thuchien` decimal(10,0) NOT NULL,
-  `Minh_chung` text NOT NULL
+  `Minh_chung` text NOT NULL,
+  `File_path` varchar(255) DEFAULT NULL,
+  `File_name` varchar(255) DEFAULT NULL,
+  `updated_at` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `dulieu_kpi`
 --
 
-INSERT INTO `dulieu_kpi` (`ID_dulieu`, `ID_phancong`, `ID_nguoigui`, `Ngay_gui`, `Ketqua_thuchien`, `Minh_chung`) VALUES
-(1, 201, 1, '2025-10-15 05:30:26', 80, ''),
-(2, 202, 1, '2025-10-15 05:30:26', 45, ''),
-(3, 205, 1, '2025-10-13 05:30:26', 11500000, ''),
-(4, 202, 1, '2025-10-15 06:37:20', 15, ''),
-(5, 202, 1, '2025-10-15 06:37:24', 15, '');
+INSERT INTO `dulieu_kpi` (`ID_dulieu`, `ID_phancong`, `ID_nguoigui`, `Ngay_gui`, `Minh_chung`, `File_path`, `File_name`, `updated_at`) VALUES
+(6, 204, 1, '2025-10-19 05:57:43', 'kkk', 'kpi-submissions/1/MnQhJrEsXz5XbmOD4gVf3TOAGWS9y4qJWWgh2v72.pdf', 'baibao.pdf', NULL),
+(7, 204, 1, '2025-10-19 06:15:32', 'nop lan 2', 'kpi-submissions/1/19t2OyZaHVDB3HKrbNf1tqEL4uWYyEWIBYWHbSOy.pdf', 'certificate.pdf', NULL);
 
 -- --------------------------------------------------------
 
@@ -80,24 +79,61 @@ INSERT INTO `dulieu_kpi` (`ID_dulieu`, `ID_phancong`, `ID_nguoigui`, `Ngay_gui`,
 
 CREATE TABLE `kpi` (
   `ID_kpi` int(11) NOT NULL,
+  `ID_loai_kpi` int(11) DEFAULT NULL,
   `Ten_kpi` varchar(100) NOT NULL,
   `Chi_tieu` decimal(10,0) NOT NULL,
   `Donvi_tinh` varchar(50) DEFAULT NULL,
   `Do_uu_tien` enum('Rất gấp','Gấp','Trung Bình','Không','') DEFAULT NULL,
   `Ngay_tao` timestamp NOT NULL DEFAULT current_timestamp(),
-  `Mo_ta` text DEFAULT NULL
+  `Mo_ta` text DEFAULT NULL,
+  `updated_at` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `kpi`
 --
 
-INSERT INTO `kpi` (`ID_kpi`, `Ten_kpi`, `Chi_tieu`, `Donvi_tinh`, `Do_uu_tien`, `Ngay_tao`, `Mo_ta`) VALUES
-(1, 'Tăng lượt tương tác mạng xã hội', 120, 'lượt', 'Gấp', '2025-10-15 05:30:26', NULL),
-(2, 'Hoàn thành báo cáo tháng 10/2025', 50, 'trang', 'Trung Bình', '2025-10-15 05:30:26', NULL),
-(3, 'Tạo 15 bài viết marketing mới', 15, 'bài viết', 'Gấp', '2025-10-15 05:30:26', NULL),
-(4, 'Giảm tỷ lệ khách hàng rời bỏ', 5, '%', 'Rất gấp', '2025-10-15 05:30:26', NULL),
-(5, 'Đạt doanh số tuần 2 tháng 10', 10000000, 'VND', 'Trung Bình', '2025-10-15 05:30:26', NULL);
+INSERT INTO `kpi` (`ID_kpi`, `ID_loai_kpi`, `Ten_kpi`, `Chi_tieu`, `Donvi_tinh`, `Do_uu_tien`, `Ngay_tao`, `Mo_ta`, `updated_at`) VALUES
+(1, 1, 'Tăng lượt tương tác mạng xã hội', 120, 'lượt', 'Gấp', '2025-10-15 05:30:26', NULL, NULL),
+(2, 2, 'Hoàn thành báo cáo tháng 10/2025', 50, 'trang', 'Trung Bình', '2025-10-15 05:30:26', NULL, NULL),
+(3, 3, 'Tạo 15 bài viết marketing mới', 15, 'bài viết', 'Gấp', '2025-10-15 05:30:26', NULL, NULL),
+(4, 4, 'Giảm tỷ lệ khách hàng rời bỏ', 5, '%', 'Rất gấp', '2025-10-15 05:30:26', NULL, NULL),
+(5, 1, 'Đạt doanh số tuần 2 tháng 10', 10000000, 'VND', 'Trung Bình', '2025-10-15 05:30:26', NULL, NULL),
+(10, 1, 'kpi 19/10', 100, 'cai', 'Gấp', '2025-10-19 04:26:54', 'lkk', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `loai_kpi`
+--
+
+CREATE TABLE `loai_kpi` (
+  `ID_loai_kpi` int(11) NOT NULL,
+  `Ten_loai_kpi` varchar(255) NOT NULL,
+  `updated_at` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `loai_kpi`
+--
+
+INSERT INTO `loai_kpi` (`ID_loai_kpi`, `Ten_loai_kpi`, `updated_at`) VALUES
+(1, 'Marketing', NULL),
+(2, 'IT', NULL),
+(3, 'HR', NULL),
+(4, 'Finance', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `migrations`
+--
+
+CREATE TABLE `migrations` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `migration` varchar(255) NOT NULL,
+  `batch` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -110,9 +146,19 @@ CREATE TABLE `nhatky` (
   `ID_nguoithuchien` int(11) NOT NULL,
   `Doi_tuong` varchar(50) NOT NULL,
   `ID_doi_tuong` int(11) NOT NULL,
-  `Hanh_dong` enum('them','sua','xoa','duyet') NOT NULL,
-  `Ngay_thuchien` timestamp NOT NULL DEFAULT current_timestamp()
+  `Hanh_dong` enum('them','sua','xoa','duyet','phan cong kpi') NOT NULL,
+  `Ngay_thuchien` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `nhatky`
+--
+
+INSERT INTO `nhatky` (`ID_nhatky`, `ID_nguoithuchien`, `Doi_tuong`, `ID_doi_tuong`, `Hanh_dong`, `Ngay_thuchien`, `updated_at`) VALUES
+(1, 3, 'user', 9, 'xoa', '2025-10-18 13:58:16', NULL),
+(9, 6, 'user', 1, 'phan cong kpi', '2025-10-19 04:26:54', NULL),
+(10, 6, 'danhgia_kpi', 10, 'duyet', '2025-10-19 06:11:20', NULL);
 
 -- --------------------------------------------------------
 
@@ -123,23 +169,27 @@ CREATE TABLE `nhatky` (
 CREATE TABLE `phancong_kpi` (
   `ID_Phancong` int(11) NOT NULL,
   `ID_kpi` int(11) NOT NULL,
+  `ID_nguoi_phan_cong` int(11) DEFAULT NULL,
+  `ID_loai_kpi` int(11) DEFAULT NULL,
   `ID_user` int(11) DEFAULT NULL,
   `ID_phongban` int(11) DEFAULT NULL,
   `Ngay_batdau` date DEFAULT NULL,
   `Ngay_ketthuc` date DEFAULT NULL,
-  `Trang_thai` enum('chua_thuc_hien','dang_thuc_hien','hoan_thanh','qua_han') DEFAULT 'chua_thuc_hien'
+  `Trang_thai` enum('chua_thuc_hien','dang_thuc_hien','hoan_thanh','qua_han') DEFAULT 'chua_thuc_hien',
+  `updated_at` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `phancong_kpi`
 --
 
-INSERT INTO `phancong_kpi` (`ID_Phancong`, `ID_kpi`, `ID_user`, `ID_phongban`, `Ngay_batdau`, `Ngay_ketthuc`, `Trang_thai`) VALUES
-(201, 1, 1, 1, '2025-10-15', '2025-10-25', 'dang_thuc_hien'),
-(202, 2, 1, 2, '2025-09-30', '2025-10-20', 'dang_thuc_hien'),
-(203, 3, 1, 3, '2025-10-15', '2025-11-04', 'dang_thuc_hien'),
-(204, 4, 1, 2, '2025-09-15', '2025-10-13', 'dang_thuc_hien'),
-(205, 5, 1, 3, '2025-10-09', '2025-10-14', 'dang_thuc_hien');
+INSERT INTO `phancong_kpi` (`ID_Phancong`, `ID_kpi`, `ID_nguoi_phan_cong`, `ID_loai_kpi`, `ID_user`, `ID_phongban`, `Ngay_batdau`, `Ngay_ketthuc`, `Trang_thai`, `updated_at`) VALUES
+(201, 1, 6, 1, 1, 1, '2025-10-15', '2025-10-25', 'dang_thuc_hien', NULL),
+(202, 2, 0, 2, 1, 2, '2025-09-30', '2025-10-20', 'dang_thuc_hien', NULL),
+(203, 3, 6, 3, 1, 3, '2025-10-15', '2025-11-04', 'dang_thuc_hien', NULL),
+(204, 4, 6, 4, 1, 2, '2025-09-15', '2025-10-13', 'hoan_thanh', NULL),
+(205, 5, 6, 1, 1, 3, '2025-10-09', '2025-10-14', 'dang_thuc_hien', NULL),
+(210, 10, 6, 1, 1, 2, '2025-10-21', '2025-10-23', 'chua_thuc_hien', NULL);
 
 -- --------------------------------------------------------
 
@@ -149,17 +199,18 @@ INSERT INTO `phancong_kpi` (`ID_Phancong`, `ID_kpi`, `ID_user`, `ID_phongban`, `
 
 CREATE TABLE `phongban` (
   `ID_phongban` int(11) NOT NULL,
-  `Ten_phongban` varchar(100) NOT NULL
+  `Ten_phongban` varchar(100) NOT NULL,
+  `updated_at` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `phongban`
 --
 
-INSERT INTO `phongban` (`ID_phongban`, `Ten_phongban`) VALUES
-(1, 'Phòng IT'),
-(2, 'Maketing'),
-(3, 'Sale');
+INSERT INTO `phongban` (`ID_phongban`, `Ten_phongban`, `updated_at`) VALUES
+(1, 'Phòng IT', NULL),
+(2, 'Maketing', NULL),
+(3, 'Sale', NULL);
 
 -- --------------------------------------------------------
 
@@ -194,20 +245,20 @@ CREATE TABLE `tasks` (
   `ID_user_duocgiao` int(11) NOT NULL,
   `Trang_thai` enum('chua_bat_dau','dang_thuc_hien','hoan_thanh') NOT NULL DEFAULT 'chua_bat_dau',
   `Ngay_giao` datetime NOT NULL DEFAULT current_timestamp(),
-  `Ngay_het_han` date DEFAULT NULL
+  `Ngay_het_han` date DEFAULT NULL,
+  `updated_at` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tasks`
 --
 
-INSERT INTO `tasks` (`ID_task`, `Ten_task`, `Mo_ta`, `ID_user_duocgiao`, `Trang_thai`, `Ngay_giao`, `Ngay_het_han`) VALUES
-(1, 'Lên kế hoạch tuần mới', NULL, 1, 'chua_bat_dau', '2025-10-15 19:44:42', NULL),
-(2, 'Nghiên cứu đối thủ cạnh tranh', NULL, 1, 'chua_bat_dau', '2025-10-15 19:44:42', NULL),
-(3, 'Viết nội dung blog cho sản phẩm A', NULL, 1, 'dang_thuc_hien', '2025-10-15 19:44:42', NULL),
-(4, 'Thiết kế banner quảng cáo', NULL, 1, 'dang_thuc_hien', '2025-10-15 19:44:42', NULL),
-(5, 'Phân tích traffic website tuần trước', NULL, 1, 'dang_thuc_hien', '2025-10-15 19:44:42', NULL),
-(6, 'Nộp báo cáo công việc tuần 40', NULL, 1, 'hoan_thanh', '2025-10-15 19:44:42', NULL);
+INSERT INTO `tasks` (`ID_task`, `Ten_task`, `Mo_ta`, `ID_user_duocgiao`, `Trang_thai`, `Ngay_giao`, `Ngay_het_han`, `updated_at`) VALUES
+(1, 'Lên kế hoạch tuần mới', NULL, 1, 'hoan_thanh', '2025-10-15 19:44:42', NULL, NULL),
+(2, 'Nghiên cứu đối thủ cạnh tranh', NULL, 1, 'dang_thuc_hien', '2025-10-15 19:44:42', NULL, NULL),
+(3, 'Viết nội dung blog cho sản phẩm A', NULL, 1, 'hoan_thanh', '2025-10-15 19:44:42', NULL, NULL),
+(4, 'Thiết kế banner quảng cáo', NULL, 1, 'dang_thuc_hien', '2025-10-15 19:44:42', NULL, NULL),
+(5, 'Phân tích traffic website tuần trước', NULL, 1, 'dang_thuc_hien', '2025-10-15 19:44:42', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -217,10 +268,11 @@ INSERT INTO `tasks` (`ID_task`, `Ten_task`, `Mo_ta`, `ID_user_duocgiao`, `Trang_
 
 CREATE TABLE `thongbao` (
   `ID_thongbao` int(11) NOT NULL,
+  `ID_nguoigui` int(11) NOT NULL,
   `ID_nguoinhan` int(11) NOT NULL,
   `Tieu_de` varchar(200) NOT NULL,
   `Noi_dung` text DEFAULT NULL,
-  `Loai_thongbao` enum('phancong','nhacnho','ketqua') DEFAULT 'phancong',
+  `Loai_thongbao` enum('phancong_kpi','phancong_task','review_kpi','submit_kpi') DEFAULT 'phancong_kpi',
   `Da_xem` tinyint(1) DEFAULT 0,
   `Ngay_gui` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -240,19 +292,19 @@ CREATE TABLE `users` (
   `ID_quyen` int(11) NOT NULL,
   `ID_phongban` int(11) DEFAULT NULL,
   `Trang_thai` enum('hoat_dong','khong_hoat_dong','bi_chan','') DEFAULT 'hoat_dong',
-  `Ngay_tao` timestamp NOT NULL DEFAULT current_timestamp()
+  `Ngay_tao` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`ID_user`, `Email`, `MK`, `MK_hash`, `Ho_ten`, `ID_quyen`, `ID_phongban`, `Trang_thai`, `Ngay_tao`) VALUES
-(1, '21004074@st.vlute.edu.vn', '321', '$2y$10$0Mo0tPH0ZZPr29fILEbHLOnS1O9pRoDu9rP.tRLaV6tfsBljRizGy', 'Nguyễn Thái Vinh', 3, 2, 'hoat_dong', '2025-10-08 23:25:09'),
-(3, '21004212@st.vlute.edu.vn', '321', '$2y$10$0Mo0tPH0ZZPr29fILEbHLOnS1O9pRoDu9rP.tRLaV6tfsBljRizGy', 'Võ Tấn An', 1, 1, 'hoat_dong', '2025-10-08 23:25:09'),
-(6, '21004046@st.vlute.edu.vn', '123', '$2y$10$0HM7Okon.K19GftNKzCituZOqP9WecGuY.iOQwOjbSepCmOT8S/FC', 'Bạch Lê Trọng Ân', 2, 3, 'hoat_dong', '2025-10-16 00:57:39'),
-(9, 'phamvanbi@vlute.edu.vn', '123', '$2y$10$Iks6QVBibNhD7zYef3fbSexeKzd//cJ3DEfu2HUp5e6HPU8gB9XBK', 'admin1', 1, 2, 'hoat_dong', '2025-10-16 01:22:39'),
-(10, '21004074', '123', '$2y$10$A5x116WFOtwMNuTq7it4zeH.psLPBhLmJbA4zh5pXFSkO7zJSrx/W', 'Nguyễn Thái Vinh 123', 1, 2, 'hoat_dong', '2025-10-16 05:50:40');
+INSERT INTO `users` (`ID_user`, `Email`, `MK`, `MK_hash`, `Ho_ten`, `ID_quyen`, `ID_phongban`, `Trang_thai`, `Ngay_tao`, `updated_at`) VALUES
+(1, 'user@gmail.com', '321', '$2y$10$0Mo0tPH0ZZPr29fILEbHLOnS1O9pRoDu9rP.tRLaV6tfsBljRizGy', 'USER', 3, 2, 'hoat_dong', '2025-10-08 23:25:09', NULL),
+(3, 'admin@gmail.com', '321', '$2y$10$0Mo0tPH0ZZPr29fILEbHLOnS1O9pRoDu9rP.tRLaV6tfsBljRizGy', 'ADMIN', 1, 1, 'hoat_dong', '2025-10-08 23:25:09', NULL),
+(6, 'manager@gmail.com', '123', '$2y$10$0Mo0tPH0ZZPr29fILEbHLOnS1O9pRoDu9rP.tRLaV6tfsBljRizGy', 'MANAGER', 2, 3, 'hoat_dong', '2025-10-16 00:57:39', NULL),
+(10, '21004074@gmail.com', '123', '$2y$10$A5x116WFOtwMNuTq7it4zeH.psLPBhLmJbA4zh5pXFSkO7zJSrx/W', 'Nguyễn Thái Vinh', 1, 2, 'hoat_dong', '2025-10-16 05:50:40', '2025-10-18');
 
 --
 -- Indexes for dumped tables
@@ -279,6 +331,18 @@ ALTER TABLE `dulieu_kpi`
 --
 ALTER TABLE `kpi`
   ADD PRIMARY KEY (`ID_kpi`);
+
+--
+-- Indexes for table `loai_kpi`
+--
+ALTER TABLE `loai_kpi`
+  ADD PRIMARY KEY (`ID_loai_kpi`);
+
+--
+-- Indexes for table `migrations`
+--
+ALTER TABLE `migrations`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `nhatky`
@@ -334,37 +398,49 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `danhgia_kpi`
 --
 ALTER TABLE `danhgia_kpi`
-  MODIFY `ID_danhgia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `ID_danhgia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `dulieu_kpi`
 --
 ALTER TABLE `dulieu_kpi`
-  MODIFY `ID_dulieu` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `ID_dulieu` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `kpi`
 --
 ALTER TABLE `kpi`
-  MODIFY `ID_kpi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `ID_kpi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `loai_kpi`
+--
+ALTER TABLE `loai_kpi`
+  MODIFY `ID_loai_kpi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `migrations`
+--
+ALTER TABLE `migrations`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `nhatky`
 --
 ALTER TABLE `nhatky`
-  MODIFY `ID_nhatky` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID_nhatky` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `phancong_kpi`
 --
 ALTER TABLE `phancong_kpi`
-  MODIFY `ID_Phancong` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=206;
+  MODIFY `ID_Phancong` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=211;
 
 --
 -- AUTO_INCREMENT for table `phongban`
 --
 ALTER TABLE `phongban`
-  MODIFY `ID_phongban` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `ID_phongban` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `quyen`
