@@ -193,6 +193,13 @@
         border-color: #667eea;
     }
 
+    .pagination .page-link svg {
+        width: 14px !important;
+        height: 14px !important;
+        display: inline-block !important;
+        vertical-align: middle !important;
+    }
+
     /* Modal styles */
     .modal-content {
         border-radius: 15px;

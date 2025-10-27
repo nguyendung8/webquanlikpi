@@ -263,6 +263,13 @@
         border-color: #667eea;
     }
 
+    .pagination .page-link svg {
+        width: 14px !important;
+        height: 14px !important;
+        display: inline-block !important;
+        vertical-align: middle !important;
+    }
+
     .time-info {
         color: #6c757d;
         font-size: 12px;
@@ -284,7 +291,7 @@
         <div class="stat-number">{{ $stats['total'] }}</div>
         <div class="stat-label">Tổng hoạt động</div>
     </div>
-    
+
     <div class="stat-card">
         <div class="stat-icon them">
             <i class="fas fa-plus"></i>
@@ -292,7 +299,7 @@
         <div class="stat-number">{{ $stats['them'] }}</div>
         <div class="stat-label">Thêm mới</div>
     </div>
-    
+
     <div class="stat-card">
         <div class="stat-icon sua">
             <i class="fas fa-edit"></i>
@@ -300,7 +307,7 @@
         <div class="stat-number">{{ $stats['sua'] }}</div>
         <div class="stat-label">Chỉnh sửa</div>
     </div>
-    
+
     <div class="stat-card">
         <div class="stat-icon xoa">
             <i class="fas fa-trash"></i>
@@ -308,7 +315,7 @@
         <div class="stat-number">{{ $stats['xoa'] }}</div>
         <div class="stat-label">Xóa</div>
     </div>
-    
+
     <div class="stat-card">
         <div class="stat-icon duyet">
             <i class="fas fa-check"></i>
@@ -333,7 +340,7 @@
                     <option value="duyet" {{ $action == 'duyet' ? 'selected' : '' }}>Duyệt</option>
                 </select>
             </div>
-            
+
             <div class="filter-group">
                 <span>Đối tượng:</span>
                 <select onchange="filterByObject(this.value)">
@@ -343,7 +350,7 @@
                     <option value="phancong" {{ $object == 'phancong' ? 'selected' : '' }}>Phân công</option>
                 </select>
             </div>
-            
+
             <div class="search-box">
                 <span>Tìm kiếm:</span>
                 <form method="GET" style="display: flex; gap: 10px;">
@@ -361,7 +368,7 @@
                     @endif
                 </form>
             </div>
-            
+
             <div class="per-page-select">
                 <span>Xem</span>
                 <select onchange="changePerPage(this.value)">
@@ -447,7 +454,7 @@
     <!-- Pagination -->
     <div class="d-flex justify-content-between align-items-center mt-3">
         <div class="pagination-info">
-            Đang xem {{ $activities->firstItem() ?? 0 }} đến {{ $activities->lastItem() ?? 0 }} 
+            Đang xem {{ $activities->firstItem() ?? 0 }} đến {{ $activities->lastItem() ?? 0 }}
             trong tổng số {{ $activities->total() }} mục
         </div>
         <div>

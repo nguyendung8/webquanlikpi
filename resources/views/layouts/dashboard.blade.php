@@ -93,6 +93,67 @@
             text-align: center;
         }
 
+        /* Pagination Styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            margin: 20px 0;
+        }
+
+        .pagination .page-item {
+            list-style: none;
+        }
+
+        .pagination .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 40px;
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .pagination .page-link:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+            box-shadow: 0 3px 8px rgba(102, 126, 234, 0.4);
+        }
+
+        .pagination .page-item.disabled .page-link {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .pagination .page-link svg {
+            width: 16px !important;
+            height: 16px !important;
+            fill: currentColor;
+        }
+
+        /* Ẩn text "Previous" và "Next", chỉ hiện icon */
+        .pagination .page-link .hidden {
+            display: none !important;
+        }
+
         .main-content {
             flex: 1;
             margin-left: 280px;
