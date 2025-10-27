@@ -12,11 +12,20 @@
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         border-left: 4px solid #667eea;
         transition: transform 0.3s;
+        cursor: pointer;
     }
 
     .kpi-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .kpi-card-header {
+        pointer-events: none;
+    }
+
+    .kpi-card .btn {
+        pointer-events: auto;
     }
 
     .kpi-title {
@@ -382,8 +391,8 @@
     <div class="row">
         @forelse($kpis as $phancong)
         <div class="col-md-6 mb-3">
-            <div class="kpi-card {{ $phancong->danhgiaKpi && $phancong->danhgiaKpi->Ty_le_hoanthanh >= 100 ? 'completed-kpi' : '' }}">
-                <div class="kpi-title">{{ $phancong->kpi->Ten_kpi }}</div>
+            <div class="kpi-card {{ $phancong->danhgiaKpi && $phancong->danhgiaKpi->Ty_le_hoanthanh >= 100 ? 'completed-kpi' : '' }}" onclick="viewKpiDetail({{ $phancong->ID_Phancong }})">
+                <div class="kpi-title kpi-card-header">{{ $phancong->kpi->Ten_kpi }}</div>
 
                 <!-- Thêm badge hoàn thành nếu đạt 100% -->
                 @if($phancong->danhgiaKpi && $phancong->danhgiaKpi->Ty_le_hoanthanh >= 100)
@@ -433,7 +442,11 @@
                         <button class="btn btn-info btn-sm" onclick="viewSubmissions({{ $phancong->ID_Phancong }})">
                             <i class="fas fa-eye me-1"></i> Xem bài nộp
                         </button>
-                        @if($phancong->danhgiaKpi && $phancong->danhgiaKpi->Ty_le_hoanthanh >= 100)
+                        @if($phancong->Trang_thai == 'qua_han')
+                            <button class="btn btn-danger btn-sm" disabled title="KPI đã quá hạn">
+                                <i class="fas fa-times-circle me-1"></i> Đã quá hạn
+                            </button>
+                        @elseif($phancong->danhgiaKpi && $phancong->danhgiaKpi->Ty_le_hoanthanh >= 100)
                             <button class="btn btn-secondary btn-sm" disabled title="KPI đã hoàn thành 100%">
                                 <i class="fas fa-check-circle me-1"></i> Đã hoàn thành
                             </button>
@@ -530,6 +543,26 @@
         </div>
     </div>
 </div>
+
+<!-- KPI Detail Modal -->
+<div class="modal fade" id="kpiDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Chi tiết KPI
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="kpiDetailContent">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -554,6 +587,14 @@
     function openSubmitModal(id, name, target, unit) {
         // Kiểm tra xem KPI đã hoàn thành 100% chưa
         const kpiCard = document.querySelector(`[onclick*="openSubmitModal(${id}"]`).closest('.kpi-card');
+
+        // Kiểm tra trạng thái quá hạn
+        const statusBadge = kpiCard.querySelector('.status-badge');
+        if (statusBadge && statusBadge.classList.contains('status-qua_han')) {
+            showAlert('KPI này đã quá hạn, không thể nộp bài!', 'warning');
+            return;
+        }
+
         const progressFill = kpiCard.querySelector('.progress-fill');
         const progressText = progressFill.textContent.trim();
         const progressValue = parseFloat(progressText.replace('%', ''));
@@ -814,6 +855,198 @@
                 return 'Không đạt';
             default:
                 return 'Chưa đánh giá';
+        }
+    }
+
+    // View KPI Detail
+    function viewKpiDetail(id) {
+        const modal = new bootstrap.Modal(document.getElementById('kpiDetailModal'));
+        modal.show();
+
+        fetch(`/user/kpi/${id}/submissions`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayKpiDetail(data.phancong, data.submissions);
+                } else {
+                    showAlert('Không thể tải thông tin KPI', 'error');
+                }
+            })
+            .catch(error => {
+                showAlert('Có lỗi xảy ra khi tải thông tin KPI', 'error');
+            });
+    }
+
+    function displayKpiDetail(phancong, submissions) {
+        const content = document.getElementById('kpiDetailContent');
+        const startDate = new Date(phancong.Ngay_batdau).toLocaleDateString('vi-VN');
+        const endDate = new Date(phancong.Ngay_ketthuc).toLocaleDateString('vi-VN');
+
+        let html = `
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <h6 class="text-muted mb-3"><i class="fas fa-clipboard-list me-2"></i>Thông tin KPI</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td width="40%"><strong>Tên KPI:</strong></td>
+                                    <td>${phancong.kpi.Ten_kpi}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Loại KPI:</strong></td>
+                                    <td><span class="badge bg-info">${phancong.loai_kpi ? phancong.loai_kpi.Ten_loai_kpi : 'N/A'}</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Chỉ tiêu:</strong></td>
+                                    <td><strong class="text-primary">${phancong.kpi.Chi_tieu} ${phancong.kpi.Donvi_tinh}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Độ ưu tiên:</strong></td>
+                                    <td><span class="badge bg-warning">${phancong.kpi.Do_uu_tien || 'Không xác định'}</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Mô tả:</strong></td>
+                                    <td>${phancong.kpi.Mo_ta || 'Không có mô tả'}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <h6 class="text-muted mb-3"><i class="fas fa-calendar-alt me-2"></i>Thời gian & Trạng thái</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td width="40%"><strong>Ngày bắt đầu:</strong></td>
+                                    <td><i class="fas fa-calendar-check text-success me-1"></i>${startDate}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ngày kết thúc:</strong></td>
+                                    <td><i class="fas fa-calendar-times text-danger me-1"></i>${endDate}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Trạng thái:</strong></td>
+                                    <td><span class="status-badge status-${phancong.Trang_thai}">${getStatusText(phancong.Trang_thai)}</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Người phân công:</strong></td>
+                                    <td><i class="fas fa-user-tie me-1"></i>${phancong.nguoi_phan_cong ? phancong.nguoi_phan_cong.Ho_ten : 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Phòng ban:</strong></td>
+                                    <td><i class="fas fa-building me-1"></i>${phancong.phongban ? phancong.phongban.Ten_phongban : 'N/A'}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Hiển thị đánh giá nếu có
+        if (phancong.danhgia_kpi) {
+            const evaluation = phancong.danhgia_kpi;
+            const evaluationDate = new Date(evaluation.Ngay_thamdinh).toLocaleString('vi-VN');
+
+            html += `
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3"><i class="fas fa-clipboard-check me-2"></i>Kết quả đánh giá</h6>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <div class="display-6 text-primary">${evaluation.Ketqua_thuchien || 0}</div>
+                                    <small class="text-muted">Kết quả thực hiện</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <div class="display-6 text-success">${evaluation.Ty_le_hoanthanh || 0}%</div>
+                                    <small class="text-muted">Tỷ lệ hoàn thành</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <span class="evaluation-status evaluation-${evaluation.Trang_thai}">${getEvaluationStatusText(evaluation.Trang_thai)}</span>
+                                    <br><small class="text-muted">Trạng thái</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center p-3 bg-light rounded">
+                                    <div class="small text-muted">${evaluationDate}</div>
+                                    <small class="text-muted">Ngày đánh giá</small>
+                                </div>
+                            </div>
+                        </div>
+                        ${evaluation.Nhan_xet ? `
+                            <div class="mt-3">
+                                <strong>Nhận xét của quản lý:</strong>
+                                <div class="alert alert-info mt-2">${evaluation.Nhan_xet}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        } else {
+            html += `
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    KPI này chưa được đánh giá
+                </div>
+            `;
+        }
+
+        // Hiển thị danh sách bài nộp
+        html += '<div class="card border-0 shadow-sm"><div class="card-body">';
+        html += '<h6 class="text-muted mb-3"><i class="fas fa-file-upload me-2"></i>Lịch sử bài nộp (' + submissions.length + ')</h6>';
+
+        if (submissions.length > 0) {
+            submissions.forEach((submission, index) => {
+                const submitDate = new Date(submission.Ngay_gui).toLocaleString('vi-VN');
+                const fileHtml = submission.File_name ?
+                    `<a href="/user/kpi/file/${submission.ID_dulieu}/download" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-download me-1"></i> ${submission.File_name}
+                    </a>` :
+                    '<span class="text-muted">Không có file đính kèm</span>';
+
+                html += `
+                    <div class="submission-item">
+                        <div class="submission-header">
+                            <strong><i class="fas fa-file-alt me-2"></i>Bài nộp #${index + 1}</strong>
+                            <span class="submission-date">
+                                <i class="fas fa-clock me-1"></i>${submitDate}
+                            </span>
+                        </div>
+                        <div class="submission-content">
+                            <p class="mb-2"><strong>Minh chứng:</strong></p>
+                            <p class="mb-3">${submission.Minh_chung || 'Không có mô tả'}</p>
+                            ${fileHtml}
+                        </div>
+                    </div>
+                `;
+            });
+        } else {
+            html += `
+                <div class="text-center py-4">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Chưa có bài nộp nào</p>
+                </div>
+            `;
+        }
+
+        html += '</div></div>';
+        content.innerHTML = html;
+    }
+
+    function getStatusText(status) {
+        switch(status) {
+            case 'chua_thuc_hien': return 'Chưa thực hiện';
+            case 'dang_thuc_hien': return 'Đang thực hiện';
+            case 'hoan_thanh': return 'Hoàn thành';
+            case 'qua_han': return 'Quá hạn';
+            default: return status;
         }
     }
 </script>

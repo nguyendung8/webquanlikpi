@@ -29,8 +29,13 @@ class CalendarController extends Controller
             ->where('ID_user', $userId)
             ->get();
 
-        // Lấy tasks của user
-        $tasks = Tasks::where('ID_user_duocgiao', $userId)
+        // Lấy tasks của user với trạng thái từ pivot
+        $tasks = Tasks::with(['users' => function($q) use ($userId) {
+                $q->where('ID_user', $userId);
+            }])
+            ->whereHas('users', function($q) use ($userId) {
+                $q->where('ID_user', $userId);
+            })
             ->whereNotNull('Ngay_het_han')
             ->get();
 
@@ -51,17 +56,20 @@ class CalendarController extends Controller
             ];
         }
 
-        // Thêm task events
+        // Thêm task events với trạng thái từ pivot
         foreach ($tasks as $task) {
+            $user = $task->users->first();
+            $taskStatus = $user ? $user->pivot->trang_thai : 'chua_bat_dau';
+
             $events[] = [
                 'id' => 'task_' . $task->ID_task,
                 'title' => $task->Ten_task,
                 'start' => $task->Ngay_het_han,
                 'end' => $task->Ngay_het_han,
                 'type' => 'task',
-                'color' => $this->getTaskColor($task->Trang_thai),
+                'color' => $this->getTaskColor($taskStatus),
                 'description' => $task->Mo_ta ?? '',
-                'status' => $task->Trang_thai
+                'status' => $taskStatus
             ];
         }
 

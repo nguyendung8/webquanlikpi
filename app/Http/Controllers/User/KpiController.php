@@ -108,7 +108,7 @@ class KpiController extends Controller
     public function viewSubmissions($id)
     {
         $userId = Auth::id();
-        $phancongKpi = PhancongKpi::with(['kpi', 'danhgiaKpi'])
+        $phancongKpi = PhancongKpi::with(['kpi', 'danhgiaKpi', 'loaiKpi', 'nguoiPhanCong', 'phongban'])
             ->where('ID_user', $userId)
             ->findOrFail($id);
 

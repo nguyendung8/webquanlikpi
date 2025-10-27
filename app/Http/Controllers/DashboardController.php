@@ -65,8 +65,10 @@ class DashboardController extends Controller
     private function calculateAverageProgress()
     {
         $avgProgress = DB::table('danhgia_kpi')
-            ->whereNotNull('Ty_le_hoanthanh')
-            ->avg('Ty_le_hoanthanh');
+            ->join('phancong_kpi', 'danhgia_kpi.ID_Phancong', '=', 'phancong_kpi.ID_Phancong')
+            ->whereIn('phancong_kpi.Trang_thai', ['dang_thuc_hien', 'chua_thuc_hien'])
+            ->whereNotNull('danhgia_kpi.Ty_le_hoanthanh')
+            ->avg('danhgia_kpi.Ty_le_hoanthanh');
 
         return round($avgProgress ?? 0, 1);
     }

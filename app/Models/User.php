@@ -19,6 +19,7 @@ class User extends Authenticatable
     protected $fillable = [
         'Email',
         'MK',
+        'MK_hash',
         'Ho_ten',
         'ID_quyen',
         'ID_phongban',
@@ -38,6 +39,17 @@ class User extends Authenticatable
     public function getAuthPassword()
     {
         return $this->MK_hash;
+    }
+
+    public function setMKHashAttribute($value)
+    {
+        if (!empty($value)) {
+            if (password_get_info($value)['algo'] === null || password_get_info($value)['algo'] === 0) {
+                $this->attributes['MK_hash'] = bcrypt($value);
+            } else {
+                $this->attributes['MK_hash'] = $value;
+            }
+        }
     }
 
     public function quyen()

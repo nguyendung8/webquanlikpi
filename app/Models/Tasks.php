@@ -17,8 +17,6 @@ class Tasks extends Model
     protected $fillable = [
         'Ten_task',
         'Mo_ta',
-        'ID_user_duocgiao',
-        'Trang_thai',
         'Ngay_giao',
         'Ngay_het_han'
     ];
@@ -28,8 +26,15 @@ class Tasks extends Model
         'Ngay_het_han' => 'date'
     ];
 
-    public function nguoiDuocGiao()
+    public function users()
     {
-        return $this->belongsTo(User::class, 'ID_user_duocgiao', 'ID_user');
+        return $this->belongsToMany(User::class, 'task_user', 'task_id', 'user_id', 'ID_task', 'ID_user')
+            ->withPivot('trang_thai', 'comment')
+            ->withTimestamps();
+    }
+
+    public function submissions()
+    {
+        return $this->hasMany(DulieuTask::class, 'task_id', 'ID_task');
     }
 }

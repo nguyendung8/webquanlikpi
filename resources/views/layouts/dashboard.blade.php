@@ -242,6 +242,39 @@
             color: #dc3545;
         }
 
+        .user-info .dropdown-menu {
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border: none;
+            padding: 8px 0;
+            min-width: 200px;
+            margin-top: 10px;
+        }
+
+        .user-info .dropdown-item {
+            padding: 10px 20px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .user-info .dropdown-item:hover {
+            background: #f8f9fa;
+            padding-left: 25px;
+        }
+
+        .user-info .dropdown-item.text-danger:hover {
+            background: #fff5f5;
+            color: #dc3545;
+        }
+
+        .user-info .dropdown-divider {
+            margin: 5px 0;
+        }
+
         .content-area {
             padding: 30px;
         }
@@ -706,15 +739,27 @@
                             <p class="user-name">{{ Auth::user()->Ho_ten ?? 'Người dùng' }}</p>
                             <p class="user-role">{{ Auth::user()->quyen->Ten_quyen ?? 'Chưa phân quyền' }}</p>
                         </div>
-                        <div class="user-avatar">
-                            {{ substr(Auth::user()->Ho_ten ?? 'U', 0, 1) }}
+                        <div class="dropdown">
+                            <div class="user-avatar" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                                {{ substr(Auth::user()->Ho_ten ?? 'U', 0, 1) }}
+                            </div>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="{{ route('profile.index') }}">
+                                        <i class="fas fa-user-circle me-2"></i>Quản lý hồ sơ
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
                         </div>
-                        <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                            @csrf
-                            <button type="submit" class="logout-btn" title="Đăng xuất">
-                                <i class="fas fa-sign-out-alt"></i>
-                            </button>
-                        </form>
                     </div>
                 </div>
             </div>

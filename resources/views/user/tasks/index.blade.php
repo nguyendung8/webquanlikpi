@@ -3,112 +3,63 @@
 @section('title', 'Nhiệm vụ')
 
 @push('styles')
-<link href="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.css" rel="stylesheet">
 <style>
-    .kanban-board {
-        display: flex;
-        gap: 20px;
-        overflow-x: auto;
-        padding: 20px 0;
-    }
-
-    .kanban-column {
-        min-width: 300px;
-        background: #f8f9fa;
-        border-radius: 10px;
-        padding: 15px;
-        flex-shrink: 0;
-    }
-
-    .kanban-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 15px;
-        padding: 10px;
-        border-radius: 8px;
-        color: white;
-        font-weight: 600;
-    }
-
-    .kanban-header.not-started {
-        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-    }
-
-    .kanban-header.in-progress {
-        background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
-    }
-
-    .kanban-header.completed {
-        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    }
-
-    .task-count {
-        background: rgba(255, 255, 255, 0.2);
-        padding: 4px 8px;
-        border-radius: 12px;
-        font-size: 12px;
-    }
-
     .task-card {
         background: white;
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 10px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        cursor: move;
-        transition: all 0.3s;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         border-left: 4px solid #667eea;
+        transition: transform 0.3s;
+        cursor: pointer;
     }
 
     .task-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
-    .task-card.dragging {
-        opacity: 0.5;
-        transform: rotate(5deg);
+    .task-card-header {
+        pointer-events: none;
+    }
+
+    .task-card .btn {
+        pointer-events: auto;
     }
 
     .task-title {
-        font-size: 14px;
+        font-size: 18px;
         font-weight: 600;
         color: #2c3e50;
-        margin-bottom: 8px;
-        line-height: 1.4;
-    }
-
-    .task-description {
-        font-size: 12px;
-        color: #6c757d;
         margin-bottom: 10px;
-        line-height: 1.4;
     }
 
     .task-meta {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 11px;
-        color: #6c757d;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
     }
 
-    .task-date {
-        display: flex;
-        align-items: center;
-        gap: 4px;
+    .task-deadline {
+        font-size: 12px;
+        color: #dc3545;
+        font-weight: 500;
     }
 
-    .priority-indicator {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
     }
 
-    .priority-high { background: #dc3545; }
-    .priority-medium { background: #ffc107; }
-    .priority-low { background: #6c757d; }
+    .status-chua_bat_dau { background: #f8f9fa; color: #6c757d; }
+    .status-dang_thuc_hien { background: #fff3cd; color: #856404; }
+    .status-hoan_thanh { background: #d4edda; color: #155724; }
 
     .stats-card {
         background: white;
@@ -131,25 +82,34 @@
         font-weight: 500;
     }
 
-    .empty-column {
-        text-align: center;
-        padding: 40px 20px;
-        color: #6c757d;
-        font-style: italic;
+    .submission-item {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background: #f8f9fa;
     }
 
-    .empty-column i {
-        font-size: 48px;
+    .submission-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         margin-bottom: 10px;
-        opacity: 0.5;
     }
 
-    .search-filter-section {
-        background: white;
-        border-radius: 15px;
-        padding: 20px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-        margin-bottom: 20px;
+    .submission-date {
+        font-size: 12px;
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    .comment-badge {
+        background: #fff3cd;
+        color: #856404;
+        padding: 8px 12px;
+        border-radius: 8px;
+        margin-top: 10px;
+        display: inline-block;
     }
 </style>
 @endpush
@@ -198,8 +158,7 @@
     </div>
 
     <!-- Search and Filter -->
-    <div class="search-filter-section">
-        <div class="row">
+    <div class="row mb-3">
             <div class="col-md-6">
                 <form method="GET" class="d-flex">
                     <input type="text" name="search" class="form-control me-2"
@@ -209,6 +168,14 @@
                     </button>
                 </form>
             </div>
+        <div class="col-md-3">
+            <select class="form-select" onchange="filterByStatus(this.value)">
+                <option value="">Tất cả trạng thái</option>
+                <option value="chua_bat_dau" {{ $status == 'chua_bat_dau' ? 'selected' : '' }}>Chưa bắt đầu</option>
+                <option value="dang_thuc_hien" {{ $status == 'dang_thuc_hien' ? 'selected' : '' }}>Đang thực hiện</option>
+                <option value="hoan_thanh" {{ $status == 'hoan_thanh' ? 'selected' : '' }}>Hoàn thành</option>
+            </select>
+        </div>
             <div class="col-md-3">
                 <select class="form-select" onchange="changePerPage(this.value)">
                     <option value="10" {{ $perPage == 10 ? 'selected' : '' }}>10 bản ghi/trang</option>
@@ -217,121 +184,142 @@
                 </select>
             </div>
         </div>
+
+    <!-- Task List -->
+    <div class="row">
+        @forelse($tasks as $task)
+        <div class="col-md-6 mb-3">
+            <div class="task-card" onclick="viewTaskDetail({{ $task->ID_task }})">
+                <div class="task-title task-card-header">{{ $task->Ten_task }}</div>
+
+                <div class="task-meta">
+                <div>
+                            <i class="fas fa-calendar me-1"></i>
+                            {{ \Carbon\Carbon::parse($task->Ngay_giao)->format('d/m/Y') }}
+                        </div>
+                        @if($task->Ngay_het_han)
+                    <div class="task-deadline">
+                            <i class="fas fa-clock me-1"></i>
+                        Hạn: {{ \Carbon\Carbon::parse($task->Ngay_het_han)->format('d/m/Y') }}
+                    </div>
+                    @endif
+                </div>
+
+                @if($task->Mo_ta)
+                <p class="text-muted mb-3">{{ Str::limit($task->Mo_ta, 100) }}</p>
+                @endif
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="status-badge status-{{ $task->user_status }}">
+                            @if($task->user_status == 'chua_bat_dau')
+                                Chưa bắt đầu
+                            @elseif($task->user_status == 'dang_thuc_hien')
+                                Đang thực hiện
+                            @else
+                                Hoàn thành
+                            @endif
+                        </span>
+                        @if($task->user_pivot && $task->user_pivot->comment)
+                        <span class="badge bg-warning ms-2">
+                            <i class="fas fa-comment me-1"></i>Có phản hồi
+                        </span>
+                        @endif
+                        </div>
+                    <div class="d-flex gap-2">
+                        @if($task->user_status == 'hoan_thanh')
+                            <button class="btn btn-success btn-sm" disabled>
+                                <i class="fas fa-check-circle me-1"></i> Đã hoàn thành
+                            </button>
+                        @else
+                            <button class="btn btn-primary btn-sm" onclick="openSubmitModal({{ $task->ID_task }}, '{{ $task->Ten_task }}')">
+                                <i class="fas fa-upload me-1"></i> Nộp bài
+                            </button>
+                        @endif
+                    </div>
+                </div>
+                    </div>
+                </div>
+                @empty
+        <div class="col-12">
+            <div class="stats-card text-center py-5">
+                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Chưa có nhiệm vụ nào được giao</h5>
+                <p class="text-muted">Bạn sẽ thấy các nhiệm vụ được phân công ở đây</p>
+            </div>
+        </div>
+        @endforelse
+        </div>
+
+    <!-- Pagination -->
+    @if($tasks->hasPages())
+    <div class="d-flex justify-content-center mt-4">
+        {{ $tasks->appends(request()->query())->links() }}
     </div>
-
-    <!-- Kanban Board -->
-    <div class="kanban-board">
-        <!-- Chưa bắt đầu -->
-        <div class="kanban-column">
-            <div class="kanban-header not-started">
-                <div>
-                    <i class="fas fa-clock me-2"></i>
-                    Chưa bắt đầu
+    @endif
                 </div>
-                <div class="task-count">{{ $tasks->where('Trang_thai', 'chua_bat_dau')->count() }}</div>
+
+<!-- Submit Modal -->
+<div class="modal fade" id="submitModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-upload text-primary me-2"></i>
+                    Nộp bài nhiệm vụ
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div id="not-started-column" class="sortable-column">
-                @forelse($tasks->where('Trang_thai', 'chua_bat_dau') as $task)
-                <div class="task-card" data-task-id="{{ $task->ID_task }}" data-status="chua_bat_dau">
-                    <div class="task-title">{{ $task->Ten_task }}</div>
-                    @if($task->Mo_ta)
-                    <div class="task-description">{{ Str::limit($task->Mo_ta, 80) }}</div>
-                    @endif
-                    <div class="task-meta">
-                        <div class="task-date">
-                            <i class="fas fa-calendar me-1"></i>
-                            {{ \Carbon\Carbon::parse($task->Ngay_giao)->format('d/m/Y') }}
+            <form id="submitForm" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <input type="hidden" id="task_id">
+
+                    <div class="mb-3">
+                        <label class="form-label">Nhiệm vụ</label>
+                        <input type="text" class="form-control" id="task_name" readonly>
                         </div>
-                        @if($task->Ngay_het_han)
-                        <div class="task-date">
-                            <i class="fas fa-clock me-1"></i>
-                            {{ \Carbon\Carbon::parse($task->Ngay_het_han)->format('d/m') }}
+
+                    <div class="mb-3">
+                        <label class="form-label">Minh chứng <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="minh_chung" rows="3"
+                                  placeholder="Mô tả chi tiết về kết quả thực hiện..." required></textarea>
                         </div>
-                        @endif
+
+                    <div class="mb-3">
+                        <label class="form-label">File đính kèm</label>
+                        <input type="file" class="form-control" id="file_upload"
+                               accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png">
+                        <small class="form-text text-muted">
+                            Hỗ trợ: PDF, Word, Excel, hình ảnh (tối đa 10MB)
+                        </small>
                     </div>
                 </div>
-                @empty
-                <div class="empty-column">
-                    <i class="fas fa-inbox"></i>
-                    <p>Không có nhiệm vụ</p>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-upload me-1"></i> Nộp bài
+                    </button>
                 </div>
-                @endforelse
-            </div>
+            </form>
         </div>
+    </div>
+                </div>
 
-        <!-- Đang thực hiện -->
-        <div class="kanban-column">
-            <div class="kanban-header in-progress">
-                <div>
-                    <i class="fas fa-play me-2"></i>
-                    Đang thực hiện
-                </div>
-                <div class="task-count">{{ $tasks->where('Trang_thai', 'dang_thuc_hien')->count() }}</div>
+<!-- Task Detail Modal -->
+<div class="modal fade" id="taskDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-tasks me-2"></i>
+                    Chi tiết nhiệm vụ
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div id="in-progress-column" class="sortable-column">
-                @forelse($tasks->where('Trang_thai', 'dang_thuc_hien') as $task)
-                <div class="task-card" data-task-id="{{ $task->ID_task }}" data-status="dang_thuc_hien">
-                    <div class="task-title">{{ $task->Ten_task }}</div>
-                    @if($task->Mo_ta)
-                    <div class="task-description">{{ Str::limit($task->Mo_ta, 80) }}</div>
-                    @endif
-                    <div class="task-meta">
-                        <div class="task-date">
-                            <i class="fas fa-calendar me-1"></i>
-                            {{ \Carbon\Carbon::parse($task->Ngay_giao)->format('d/m/Y') }}
-                        </div>
-                        @if($task->Ngay_het_han)
-                        <div class="task-date">
-                            <i class="fas fa-clock me-1"></i>
-                            {{ \Carbon\Carbon::parse($task->Ngay_het_han)->format('d/m') }}
-                        </div>
-                        @endif
-                    </div>
+            <div class="modal-body">
+                <div id="taskDetailContent">
+                    <!-- Content will be loaded here -->
                 </div>
-                @empty
-                <div class="empty-column">
-                    <i class="fas fa-play"></i>
-                    <p>Không có nhiệm vụ</p>
-                </div>
-                @endforelse
-            </div>
-        </div>
-
-        <!-- Hoàn thành -->
-        <div class="kanban-column">
-            <div class="kanban-header completed">
-                <div>
-                    <i class="fas fa-check me-2"></i>
-                    Hoàn thành
-                </div>
-                <div class="task-count">{{ $tasks->where('Trang_thai', 'hoan_thanh')->count() }}</div>
-            </div>
-            <div id="completed-column" class="sortable-column">
-                @forelse($tasks->where('Trang_thai', 'hoan_thanh') as $task)
-                <div class="task-card" data-task-id="{{ $task->ID_task }}" data-status="hoan_thanh">
-                    <div class="task-title">{{ $task->Ten_task }}</div>
-                    @if($task->Mo_ta)
-                    <div class="task-description">{{ Str::limit($task->Mo_ta, 80) }}</div>
-                    @endif
-                    <div class="task-meta">
-                        <div class="task-date">
-                            <i class="fas fa-calendar me-1"></i>
-                            {{ \Carbon\Carbon::parse($task->Ngay_giao)->format('d/m/Y') }}
-                        </div>
-                        @if($task->Ngay_het_han)
-                        <div class="task-date">
-                            <i class="fas fa-clock me-1"></i>
-                            {{ \Carbon\Carbon::parse($task->Ngay_het_han)->format('d/m') }}
-                        </div>
-                        @endif
-                    </div>
-                </div>
-                @empty
-                <div class="empty-column">
-                    <i class="fas fa-check"></i>
-                    <p>Không có nhiệm vụ</p>
-                </div>
-                @endforelse
             </div>
         </div>
     </div>
@@ -339,73 +327,16 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize sortable for each column
-        const notStartedColumn = document.getElementById('not-started-column');
-        const inProgressColumn = document.getElementById('in-progress-column');
-        const completedColumn = document.getElementById('completed-column');
-
-        // Not Started Column - can move to In Progress
-        new Sortable(notStartedColumn, {
-            group: 'tasks',
-            animation: 150,
-            ghostClass: 'dragging',
-            onEnd: function(evt) {
-                const taskId = evt.item.dataset.taskId;
-                const newStatus = evt.to.id === 'in-progress-column' ? 'dang_thuc_hien' : 'chua_bat_dau';
-
-                if (evt.to.id === 'in-progress-column') {
-                    updateTaskStatus(taskId, newStatus);
+    function filterByStatus(status) {
+        const url = new URL(window.location);
+        if (status) {
+            url.searchParams.set('status', status);
                 } else {
-                    // Revert if moved to wrong column
-                    evt.from.insertBefore(evt.item, evt.from.children[evt.oldIndex]);
-                }
-            }
-        });
-
-        // In Progress Column - can move to Completed or back to Not Started
-        new Sortable(inProgressColumn, {
-            group: 'tasks',
-            animation: 150,
-            ghostClass: 'dragging',
-            onEnd: function(evt) {
-                const taskId = evt.item.dataset.taskId;
-                let newStatus = 'dang_thuc_hien';
-
-                if (evt.to.id === 'completed-column') {
-                    newStatus = 'hoan_thanh';
-                } else if (evt.to.id === 'not-started-column') {
-                    newStatus = 'chua_bat_dau';
-                }
-
-                if (evt.to.id !== 'in-progress-column') {
-                    updateTaskStatus(taskId, newStatus);
-                } else {
-                    // Revert if moved to wrong column
-                    evt.from.insertBefore(evt.item, evt.from.children[evt.oldIndex]);
-                }
-            }
-        });
-
-        // Completed Column - can only move back to In Progress
-        new Sortable(completedColumn, {
-            group: 'tasks',
-            animation: 150,
-            ghostClass: 'dragging',
-            onEnd: function(evt) {
-                const taskId = evt.item.dataset.taskId;
-
-                if (evt.to.id === 'in-progress-column') {
-                    updateTaskStatus(taskId, 'dang_thuc_hien');
-                } else {
-                    // Revert if moved to wrong column
-                    evt.from.insertBefore(evt.item, evt.from.children[evt.oldIndex]);
-                }
-            }
-        });
-    });
+            url.searchParams.delete('status');
+        }
+        window.location.href = url.toString();
+    }
 
     function changePerPage(value) {
         const url = new URL(window.location);
@@ -413,44 +344,166 @@
         window.location.href = url.toString();
     }
 
-    function updateTaskStatus(taskId, status) {
-        fetch(`/user/tasks/${taskId}/status`, {
+    function openSubmitModal(id, name) {
+        event.stopPropagation();
+
+        document.getElementById('task_id').value = id;
+        document.getElementById('task_name').value = name;
+
+        // Reset form
+        document.getElementById('submitForm').reset();
+        document.getElementById('task_id').value = id;
+        document.getElementById('task_name').value = name;
+
+        new bootstrap.Modal(document.getElementById('submitModal')).show();
+    }
+
+    function viewTaskDetail(id) {
+        const modal = new bootstrap.Modal(document.getElementById('taskDetailModal'));
+        modal.show();
+
+        fetch(`/user/tasks/${id}/submission`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayTaskDetail(data.task, data.submissions, data.pivot);
+                } else {
+                    showAlert('Không thể tải thông tin nhiệm vụ', 'error');
+                }
+            })
+            .catch(error => {
+                showAlert('Có lỗi xảy ra khi tải thông tin nhiệm vụ', 'error');
+            });
+    }
+
+    function displayTaskDetail(task, submissions, pivot) {
+        const content = document.getElementById('taskDetailContent');
+        const createdDate = new Date(task.Ngay_giao).toLocaleDateString('vi-VN');
+        const deadlineDate = task.Ngay_het_han ? new Date(task.Ngay_het_han).toLocaleDateString('vi-VN') : 'Không có';
+
+        let html = `
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="mb-3"><i class="fas fa-tasks me-2 text-info"></i>${task.Ten_task}</h5>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong><i class="fas fa-align-left me-2"></i>Mô tả:</strong></p>
+                            <p class="text-muted">${task.Mo_ta || 'Không có mô tả'}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong><i class="fas fa-info-circle me-2"></i>Trạng thái:</strong></p>
+                            <span class="status-badge status-${pivot ? pivot.trang_thai : 'chua_bat_dau'}">
+                                ${getStatusText(pivot ? pivot.trang_thai : 'chua_bat_dau')}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong><i class="fas fa-calendar me-2"></i>Ngày giao:</strong></p>
+                            <p class="text-muted">${createdDate}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong><i class="fas fa-clock me-2"></i>Hạn hoàn thành:</strong></p>
+                            <p class="text-muted">${deadlineDate}</p>
+                        </div>
+                    </div>
+
+                    ${pivot && pivot.comment ? `
+                        <div class="alert alert-warning mt-3">
+                            <strong><i class="fas fa-comment me-2"></i>Phản hồi từ quản lý:</strong>
+                            <p class="mb-0 mt-2">${pivot.comment}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+
+        // Hiển thị lịch sử bài nộp
+        html += '<div class="card border-0 shadow-sm"><div class="card-body">';
+        html += `<h6 class="text-muted mb-3"><i class="fas fa-file-upload me-2"></i>Lịch sử bài nộp (${submissions.length})</h6>`;
+
+        if (submissions.length > 0) {
+            submissions.forEach((submission, index) => {
+                const submitDate = new Date(submission.Ngay_gui).toLocaleString('vi-VN');
+                const fileHtml = submission.File_name ?
+                    `<a href="/user/tasks/${submission.ID_dulieu}/download" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-download me-1"></i> ${submission.File_name}
+                    </a>` :
+                    '<span class="text-muted">Không có file đính kèm</span>';
+
+                // Đảo ngược số thứ tự: bài mới nhất (index 0) = #n, bài cũ nhất = #1
+                const submissionNumber = submissions.length - index;
+
+                html += `
+                    <div class="submission-item">
+                        <div class="submission-header">
+                            <strong><i class="fas fa-file-alt me-2"></i>Bài nộp #${submissionNumber}</strong>
+                            <span class="submission-date">
+                                <i class="fas fa-clock me-1"></i>${submitDate}
+                            </span>
+                        </div>
+                        <p class="mb-2"><strong>Minh chứng:</strong></p>
+                        <p class="mb-3">${submission.Minh_chung || 'Không có mô tả'}</p>
+                        ${fileHtml}
+                    </div>
+                `;
+            });
+        } else {
+            html += `
+                <div class="text-center py-4">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Bạn chưa nộp bài cho nhiệm vụ này</p>
+                </div>
+            `;
+        }
+
+        html += '</div></div>';
+        content.innerHTML = html;
+    }
+
+    function getStatusText(status) {
+        switch(status) {
+            case 'chua_bat_dau': return 'Chưa bắt đầu';
+            case 'dang_thuc_hien': return 'Đang thực hiện';
+            case 'hoan_thanh': return 'Hoàn thành';
+            default: return status;
+        }
+    }
+
+    document.getElementById('submitForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('minh_chung', document.getElementById('minh_chung').value);
+
+        const fileInput = document.getElementById('file_upload');
+        if (fileInput.files[0]) {
+            formData.append('file', fileInput.files[0]);
+        }
+
+        fetch(`/user/tasks/${document.getElementById('task_id').value}/submit`, {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Content-Type': 'application/json'
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             },
-            body: JSON.stringify({ Trang_thai: status })
+            body: formData
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 showAlert(data.message, 'success');
-                // Update task count
-                updateTaskCounts();
+                bootstrap.Modal.getInstance(document.getElementById('submitModal')).hide();
+                setTimeout(() => location.reload(), 1500);
             } else {
                 showAlert(data.message, 'error');
-                // Reload page to revert changes
-                location.reload();
             }
         })
         .catch(error => {
-            showAlert('Có lỗi xảy ra khi cập nhật trạng thái', 'error');
-            // Reload page to revert changes
-            location.reload();
+            showAlert('Có lỗi xảy ra khi nộp bài', 'error');
         });
-    }
-
-    function updateTaskCounts() {
-        // Update task counts in headers
-        const notStartedCount = document.querySelectorAll('#not-started-column .task-card').length;
-        const inProgressCount = document.querySelectorAll('#in-progress-column .task-card').length;
-        const completedCount = document.querySelectorAll('#completed-column .task-card').length;
-
-        document.querySelector('.kanban-header.not-started .task-count').textContent = notStartedCount;
-        document.querySelector('.kanban-header.in-progress .task-count').textContent = inProgressCount;
-        document.querySelector('.kanban-header.completed .task-count').textContent = completedCount;
-    }
+    });
 
     function showAlert(message, type) {
         const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';

@@ -47,12 +47,23 @@ class DashboardController extends Controller
             ->groupBy('month')
             ->pluck('count', 'month');
 
-        // Thống kê tasks
+        // Thống kê tasks theo trạng thái của user
         $taskStats = [
-            'total' => Tasks::where('ID_user_duocgiao', $userId)->count(),
-            'completed' => Tasks::where('ID_user_duocgiao', $userId)->where('Trang_thai', 'hoan_thanh')->count(),
-            'in_progress' => Tasks::where('ID_user_duocgiao', $userId)->where('Trang_thai', 'dang_thuc_hien')->count(),
-            'not_started' => Tasks::where('ID_user_duocgiao', $userId)->where('Trang_thai', 'chua_bat_dau')->count(),
+            'total' => Tasks::whereHas('users', function($q) use ($userId) {
+                $q->where('ID_user', $userId);
+            })->count(),
+            'completed' => Tasks::whereHas('users', function($q) use ($userId) {
+                $q->where('ID_user', $userId)
+                  ->where('task_user.trang_thai', 'hoan_thanh');
+            })->count(),
+            'in_progress' => Tasks::whereHas('users', function($q) use ($userId) {
+                $q->where('ID_user', $userId)
+                  ->where('task_user.trang_thai', 'dang_thuc_hien');
+            })->count(),
+            'not_started' => Tasks::whereHas('users', function($q) use ($userId) {
+                $q->where('ID_user', $userId)
+                  ->where('task_user.trang_thai', 'chua_bat_dau');
+            })->count(),
         ];
 
         // KPI gần deadline (trong 7 ngày tới)
@@ -65,7 +76,9 @@ class DashboardController extends Controller
             ->get();
 
         // Tasks gần deadline (trong 7 ngày tới)
-        $upcomingTasks = Tasks::where('ID_user_duocgiao', $userId)
+        $upcomingTasks = Tasks::whereHas('users', function($q) use ($userId) {
+                $q->where('ID_user', $userId);
+            })
             ->where('Ngay_het_han', '>=', now())
             ->where('Ngay_het_han', '<=', now()->addDays(7))
             ->orderBy('Ngay_het_han', 'asc')

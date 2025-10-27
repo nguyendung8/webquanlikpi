@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Manager\DashboardController as ManagerDashboardController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\User\KpiController as UserKpiController;
 use App\Models\Thongbao;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,6 +97,10 @@ Route::middleware('auth')->group(function () {
             'update' => 'manager.tasks.update',
             'destroy' => 'manager.tasks.destroy'
         ]);
+        Route::get('tasks/{id}/submissions', [ManagerTasksController::class, 'viewTaskSubmissions'])->name('manager.tasks.submissions');
+        Route::post('tasks/{taskId}/approve/{userId}', [ManagerTasksController::class, 'approveTask'])->name('manager.tasks.approve');
+        Route::post('tasks/{taskId}/reject/{userId}', [ManagerTasksController::class, 'rejectTask'])->name('manager.tasks.reject');
+        Route::get('tasks/file/{dulieuId}/download', [ManagerTasksController::class, 'downloadSubmissionFile'])->name('manager.tasks.download');
     });
 
     // Employee routes
@@ -110,6 +116,9 @@ Route::middleware('auth')->group(function () {
         // Tasks Management
         Route::get('/tasks', [UserTasksController::class, 'index'])->name('user.tasks.index');
         Route::post('/tasks/{id}/status', [UserTasksController::class, 'updateStatus'])->name('user.tasks.status');
+        Route::post('/tasks/{id}/submit', [UserTasksController::class, 'submitTask'])->name('user.tasks.submit');
+        Route::get('/tasks/{id}/submission', [UserTasksController::class, 'viewSubmission'])->name('user.tasks.submission');
+        Route::get('/tasks/{id}/download', [UserTasksController::class, 'downloadFile'])->name('user.tasks.download');
 
         // Calendar
         Route::get('/calendar', [UserCalendarController::class, 'index'])->name('user.calendar.index');
@@ -121,4 +130,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
     Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount'])->name('notifications.unread-count');
+
+    // Profile routes
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
 });

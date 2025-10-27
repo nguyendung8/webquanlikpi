@@ -45,10 +45,10 @@ class ReportsController extends Controller
             ->groupBy('Trang_thai')
             ->get();
 
-        // 4. Thống kê Tasks theo trạng thái
-        $tasksByStatus = DB::table('tasks')
-            ->select('Trang_thai', DB::raw('COUNT(*) as count'))
-            ->groupBy('Trang_thai')
+        // 4. Thống kê Tasks theo trạng thái (từ pivot table vì mỗi user có trạng thái riêng)
+        $tasksByStatus = DB::table('task_user')
+            ->select('trang_thai', DB::raw('COUNT(*) as count'))
+            ->groupBy('trang_thai')
             ->get();
 
         // 5. Thống kê người dùng theo phòng ban
@@ -71,7 +71,7 @@ class ReportsController extends Controller
 
         return view('admin.reports.index', compact(
             'kpiByStatus',
-            'kpiByPriority', 
+            'kpiByPriority',
             'danhgiaByResult',
             'tasksByStatus',
             'usersByDepartment',
