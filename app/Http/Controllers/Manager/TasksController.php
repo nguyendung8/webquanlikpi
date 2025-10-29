@@ -62,16 +62,27 @@ class TasksController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'Ten_task' => 'required|string|max:255',
-            'Mo_ta' => 'nullable|string',
-            'user_ids' => 'required|array|min:1',
-            'user_ids.*' => 'exists:users,ID_user',
-            'Ngay_het_han' => 'nullable|date|after:today'
-        ], [
-            'user_ids.required' => 'Vui lòng chọn ít nhất 1 người được giao',
-            'user_ids.min' => 'Vui lòng chọn ít nhất 1 người được giao'
-        ]);
+        try {
+            $request->validate([
+                'Ten_task' => 'required|string|max:255',
+                'Mo_ta' => 'nullable|string',
+                'user_ids' => 'required|array|min:1',
+                'user_ids.*' => 'exists:users,ID_user',
+                'Ngay_het_han' => 'nullable|date'
+            ], [
+                'Ten_task.required' => 'Vui lòng nhập tên nhiệm vụ',
+                'user_ids.required' => 'Vui lòng chọn ít nhất 1 người được giao',
+                'user_ids.min' => 'Vui lòng chọn ít nhất 1 người được giao',
+                'user_ids.*.exists' => 'Người dùng không hợp lệ',
+                'Ngay_het_han.date' => 'Ngày hết hạn không hợp lệ'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $e->errors()
+            ], 422);
+        }
 
         // Tạo task
         $task = Tasks::create([
@@ -149,16 +160,27 @@ class TasksController extends Controller
     {
         $task = Tasks::findOrFail($id);
 
-        $request->validate([
-            'Ten_task' => 'required|string|max:255',
-            'Mo_ta' => 'nullable|string',
-            'user_ids' => 'required|array|min:1',
-            'user_ids.*' => 'exists:users,ID_user',
-            'Ngay_het_han' => 'nullable|date'
-        ], [
-            'user_ids.required' => 'Vui lòng chọn ít nhất 1 người được giao',
-            'user_ids.min' => 'Vui lòng chọn ít nhất 1 người được giao'
-        ]);
+        try {
+            $request->validate([
+                'Ten_task' => 'required|string|max:255',
+                'Mo_ta' => 'nullable|string',
+                'user_ids' => 'required|array|min:1',
+                'user_ids.*' => 'exists:users,ID_user',
+                'Ngay_het_han' => 'nullable|date'
+            ], [
+                'Ten_task.required' => 'Vui lòng nhập tên nhiệm vụ',
+                'user_ids.required' => 'Vui lòng chọn ít nhất 1 người được giao',
+                'user_ids.min' => 'Vui lòng chọn ít nhất 1 người được giao',
+                'user_ids.*.exists' => 'Người dùng không hợp lệ',
+                'Ngay_het_han.date' => 'Ngày hết hạn không hợp lệ'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Dữ liệu không hợp lệ',
+                'errors' => $e->errors()
+            ], 422);
+        }
 
         $oldUserIds = $task->users->pluck('ID_user')->toArray();
         $newUserIds = $request->user_ids;

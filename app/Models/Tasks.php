@@ -16,6 +16,7 @@ class Tasks extends Model
 
     protected $fillable = [
         'Ten_task',
+        'ID_nguoi_phan_cong',
         'Mo_ta',
         'Ngay_giao',
         'Ngay_het_han'
