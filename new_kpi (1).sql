@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 19, 2025 at 08:33 AM
+-- Generation Time: Oct 29, 2025 at 02:07 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -44,7 +44,8 @@ CREATE TABLE `danhgia_kpi` (
 --
 
 INSERT INTO `danhgia_kpi` (`ID_danhgia`, `ID_phancong`, `Ty_le_hoanthanh`, `Ketqua_thuchien`, `Trang_thai`, `ID_nguoithamdinh`, `Ngay_thamdinh`, `Nhan_xet`, `updated_at`) VALUES
-(10, 204, 100.00, 5, 'dat', 6, '2025-10-18 23:24:16', 'ok roi nhe', NULL);
+(10, 204, 100.00, 5, 'dat', 6, '2025-10-18 23:24:16', 'ok roi nhe', NULL),
+(11, 203, 66.67, 10, 'khong_dat', 6, '2025-10-19 00:07:17', 'lam lai', NULL);
 
 -- --------------------------------------------------------
 
@@ -69,7 +70,35 @@ CREATE TABLE `dulieu_kpi` (
 
 INSERT INTO `dulieu_kpi` (`ID_dulieu`, `ID_phancong`, `ID_nguoigui`, `Ngay_gui`, `Minh_chung`, `File_path`, `File_name`, `updated_at`) VALUES
 (6, 204, 1, '2025-10-19 05:57:43', 'kkk', 'kpi-submissions/1/MnQhJrEsXz5XbmOD4gVf3TOAGWS9y4qJWWgh2v72.pdf', 'baibao.pdf', NULL),
-(7, 204, 1, '2025-10-19 06:15:32', 'nop lan 2', 'kpi-submissions/1/19t2OyZaHVDB3HKrbNf1tqEL4uWYyEWIBYWHbSOy.pdf', 'certificate.pdf', NULL);
+(7, 204, 1, '2025-10-19 06:15:32', 'nop lan 2', 'kpi-submissions/1/19t2OyZaHVDB3HKrbNf1tqEL4uWYyEWIBYWHbSOy.pdf', 'certificate.pdf', NULL),
+(8, 203, 1, '2025-10-19 07:06:34', 'sấ', 'kpi-submissions/1/JWxH8wZiEYpuzjY8s0p76PaqeNYf2voDh0lmlZq5.pdf', 'certificate (2).pdf', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `dulieu_task`
+--
+
+CREATE TABLE `dulieu_task` (
+  `ID_dulieu` bigint(20) UNSIGNED NOT NULL,
+  `task_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `Minh_chung` text NOT NULL,
+  `File_name` varchar(255) DEFAULT NULL,
+  `File_path` varchar(255) DEFAULT NULL,
+  `Ngay_gui` timestamp NOT NULL DEFAULT current_timestamp(),
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `dulieu_task`
+--
+
+INSERT INTO `dulieu_task` (`ID_dulieu`, `task_id`, `user_id`, `Minh_chung`, `File_name`, `File_path`, `Ngay_gui`, `created_at`, `updated_at`) VALUES
+(1, 10, 1, 'nop lan 1', '1761577143_banner-pet.jpg', 'tasks/1761577143_banner-pet.jpg', '2025-10-27 07:59:03', '2025-10-27 07:59:03', '2025-10-27 07:59:03'),
+(2, 10, 1, 'nop lan 2', '1761577273_HoaDon_HD02_20251025062306.pdf', 'tasks/1761577273_HoaDon_HD02_20251025062306.pdf', '2025-10-27 08:01:13', '2025-10-27 08:01:13', '2025-10-27 08:01:13'),
+(3, 14, 11, 'dsadsa', '1761578408_1761577143_banner-pet.jpg', 'tasks/1761578408_1761577143_banner-pet.jpg', '2025-10-27 08:20:08', '2025-10-27 08:20:08', '2025-10-27 08:20:08');
 
 -- --------------------------------------------------------
 
@@ -99,7 +128,8 @@ INSERT INTO `kpi` (`ID_kpi`, `ID_loai_kpi`, `Ten_kpi`, `Chi_tieu`, `Donvi_tinh`,
 (3, 3, 'Tạo 15 bài viết marketing mới', 15, 'bài viết', 'Gấp', '2025-10-15 05:30:26', NULL, NULL),
 (4, 4, 'Giảm tỷ lệ khách hàng rời bỏ', 5, '%', 'Rất gấp', '2025-10-15 05:30:26', NULL, NULL),
 (5, 1, 'Đạt doanh số tuần 2 tháng 10', 10000000, 'VND', 'Trung Bình', '2025-10-15 05:30:26', NULL, NULL),
-(10, 1, 'kpi 19/10', 100, 'cai', 'Gấp', '2025-10-19 04:26:54', 'lkk', NULL);
+(10, 1, 'kpi 19/10', 100, 'cai', 'Gấp', '2025-10-19 04:26:54', 'lkk', NULL),
+(11, 3, 'kpi 19/10 lan 2', 100, 'VND', 'Gấp', '2025-10-19 07:03:42', 'dá', NULL);
 
 -- --------------------------------------------------------
 
@@ -135,6 +165,13 @@ CREATE TABLE `migrations` (
   `batch` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `migrations`
+--
+
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
+(1, '2025_01_03_000000_add_submission_columns_to_task_user_table', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -158,7 +195,8 @@ CREATE TABLE `nhatky` (
 INSERT INTO `nhatky` (`ID_nhatky`, `ID_nguoithuchien`, `Doi_tuong`, `ID_doi_tuong`, `Hanh_dong`, `Ngay_thuchien`, `updated_at`) VALUES
 (1, 3, 'user', 9, 'xoa', '2025-10-18 13:58:16', NULL),
 (9, 6, 'user', 1, 'phan cong kpi', '2025-10-19 04:26:54', NULL),
-(10, 6, 'danhgia_kpi', 10, 'duyet', '2025-10-19 06:11:20', NULL);
+(10, 6, 'danhgia_kpi', 10, 'duyet', '2025-10-19 06:11:20', NULL),
+(11, 6, 'user', 1, 'phan cong kpi', '2025-10-19 07:03:42', NULL);
 
 -- --------------------------------------------------------
 
@@ -185,11 +223,12 @@ CREATE TABLE `phancong_kpi` (
 
 INSERT INTO `phancong_kpi` (`ID_Phancong`, `ID_kpi`, `ID_nguoi_phan_cong`, `ID_loai_kpi`, `ID_user`, `ID_phongban`, `Ngay_batdau`, `Ngay_ketthuc`, `Trang_thai`, `updated_at`) VALUES
 (201, 1, 6, 1, 1, 1, '2025-10-15', '2025-10-25', 'dang_thuc_hien', NULL),
-(202, 2, 0, 2, 1, 2, '2025-09-30', '2025-10-20', 'dang_thuc_hien', NULL),
+(202, 2, 0, 2, 1, 2, '2025-09-30', '2025-10-20', 'qua_han', NULL),
 (203, 3, 6, 3, 1, 3, '2025-10-15', '2025-11-04', 'dang_thuc_hien', NULL),
-(204, 4, 6, 4, 1, 2, '2025-09-15', '2025-10-13', 'hoan_thanh', NULL),
-(205, 5, 6, 1, 1, 3, '2025-10-09', '2025-10-14', 'dang_thuc_hien', NULL),
-(210, 10, 6, 1, 1, 2, '2025-10-21', '2025-10-23', 'chua_thuc_hien', NULL);
+(204, 4, 6, 4, 1, 2, '2025-09-15', '2025-10-13', 'qua_han', NULL),
+(205, 5, 6, 1, 1, 3, '2025-10-09', '2025-10-14', 'qua_han', NULL),
+(210, 10, 6, 1, 1, 2, '2025-10-21', '2025-10-23', 'qua_han', NULL),
+(211, 11, 6, 3, 1, 2, '2025-10-12', '2025-11-01', 'chua_thuc_hien', NULL);
 
 -- --------------------------------------------------------
 
@@ -242,8 +281,6 @@ CREATE TABLE `tasks` (
   `ID_task` int(11) NOT NULL,
   `Ten_task` varchar(255) NOT NULL,
   `Mo_ta` text DEFAULT NULL,
-  `ID_user_duocgiao` int(11) NOT NULL,
-  `Trang_thai` enum('chua_bat_dau','dang_thuc_hien','hoan_thanh') NOT NULL DEFAULT 'chua_bat_dau',
   `Ngay_giao` datetime NOT NULL DEFAULT current_timestamp(),
   `Ngay_het_han` date DEFAULT NULL,
   `updated_at` date DEFAULT NULL
@@ -253,12 +290,41 @@ CREATE TABLE `tasks` (
 -- Dumping data for table `tasks`
 --
 
-INSERT INTO `tasks` (`ID_task`, `Ten_task`, `Mo_ta`, `ID_user_duocgiao`, `Trang_thai`, `Ngay_giao`, `Ngay_het_han`, `updated_at`) VALUES
-(1, 'Lên kế hoạch tuần mới', NULL, 1, 'hoan_thanh', '2025-10-15 19:44:42', NULL, NULL),
-(2, 'Nghiên cứu đối thủ cạnh tranh', NULL, 1, 'dang_thuc_hien', '2025-10-15 19:44:42', NULL, NULL),
-(3, 'Viết nội dung blog cho sản phẩm A', NULL, 1, 'hoan_thanh', '2025-10-15 19:44:42', NULL, NULL),
-(4, 'Thiết kế banner quảng cáo', NULL, 1, 'dang_thuc_hien', '2025-10-15 19:44:42', NULL, NULL),
-(5, 'Phân tích traffic website tuần trước', NULL, 1, 'dang_thuc_hien', '2025-10-15 19:44:42', NULL, NULL);
+INSERT INTO `tasks` (`ID_task`, `Ten_task`, `Mo_ta`, `Ngay_giao`, `Ngay_het_han`, `updated_at`) VALUES
+(10, 'nv 1', 'nhiem vu 1', '2025-10-27 21:06:19', '2025-10-31', NULL),
+(14, 'nv 2', 'nhiem vu 2', '2025-10-27 22:16:04', '2025-10-31', NULL),
+(15, 'nv 3', 'dsdsa', '2025-10-27 22:18:01', '2025-11-08', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `task_user`
+--
+
+CREATE TABLE `task_user` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `task_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `trang_thai` enum('chua_bat_dau','dang_thuc_hien','hoan_thanh') NOT NULL DEFAULT 'chua_bat_dau',
+  `comment` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `task_user`
+--
+
+INSERT INTO `task_user` (`id`, `task_id`, `user_id`, `trang_thai`, `comment`, `created_at`, `updated_at`) VALUES
+(1, 10, 1, 'hoan_thanh', 'ok rôi', NULL, '2025-10-27 08:04:58'),
+(2, 10, 11, 'chua_bat_dau', '', NULL, NULL),
+(3, 11, 1, 'chua_bat_dau', NULL, '2025-10-27 08:11:06', '2025-10-27 08:13:25'),
+(4, 12, 1, 'chua_bat_dau', NULL, '2025-10-27 08:11:09', '2025-10-27 08:11:09'),
+(5, 11, 11, 'chua_bat_dau', NULL, '2025-10-27 08:13:18', '2025-10-27 08:13:25'),
+(6, 13, 1, 'chua_bat_dau', NULL, '2025-10-27 08:14:08', '2025-10-27 08:14:08'),
+(7, 14, 1, 'chua_bat_dau', NULL, '2025-10-27 08:16:04', '2025-10-27 08:17:34'),
+(8, 14, 11, 'dang_thuc_hien', NULL, '2025-10-27 08:16:54', '2025-10-27 08:20:08'),
+(9, 15, 1, 'chua_bat_dau', NULL, '2025-10-27 08:18:01', '2025-10-27 08:18:01');
 
 -- --------------------------------------------------------
 
@@ -268,7 +334,7 @@ INSERT INTO `tasks` (`ID_task`, `Ten_task`, `Mo_ta`, `ID_user_duocgiao`, `Trang_
 
 CREATE TABLE `thongbao` (
   `ID_thongbao` int(11) NOT NULL,
-  `ID_nguoigui` int(11) NOT NULL,
+  `ID_nguoigui` int(11) DEFAULT NULL,
   `ID_nguoinhan` int(11) NOT NULL,
   `Tieu_de` varchar(200) NOT NULL,
   `Noi_dung` text DEFAULT NULL,
@@ -276,6 +342,29 @@ CREATE TABLE `thongbao` (
   `Da_xem` tinyint(1) DEFAULT 0,
   `Ngay_gui` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `thongbao`
+--
+
+INSERT INTO `thongbao` (`ID_thongbao`, `ID_nguoigui`, `ID_nguoinhan`, `Tieu_de`, `Noi_dung`, `Loai_thongbao`, `Da_xem`, `Ngay_gui`) VALUES
+(1, 6, 1, 'Phân công nhiệm vụ mới', 'Bạn đã được phân công nhiệm vụ: \'nhiem vu 19/10\'. Hạn hoàn thành: 2025-10-23', 'phancong_task', 1, '2025-10-19 07:02:58'),
+(2, 6, 1, 'Phân công KPI mới', 'Bạn đã được phân công KPI: kpi 19/10 lan 2. Deadline: 2025-11-01', 'phancong_kpi', 1, '2025-10-19 07:03:42'),
+(4, 1, 6, 'Nộp bài KPI', 'Nhân viên đã nộp bài cho KPI: \'Tạo 15 bài viết marketing mới\'. Vui lòng kiểm tra và đánh giá.', 'submit_kpi', 1, '2025-10-19 07:06:34'),
+(5, 6, 1, 'Đánh giá KPI', 'KPI \'Tạo 15 bài viết marketing mới\' đã được đánh giá. Tỷ lệ hoàn thành: 66.67%. Trạng thái: Khong dat', 'review_kpi', 1, '2025-10-19 07:07:17'),
+(6, 6, 1, 'Phân công nhiệm vụ mới', 'Bạn đã được phân công nhiệm vụ: \'nv 1\'. Hạn hoàn thành: 2025-10-31', 'phancong_task', 1, '2025-10-27 14:06:19'),
+(7, 6, 11, 'Phân công nhiệm vụ mới', 'Bạn đã được phân công nhiệm vụ: \'nv 1\'. Hạn hoàn thành: 2025-10-31', 'phancong_task', 0, '2025-10-27 14:06:19'),
+(8, 6, 1, 'Yêu cầu làm lại nhiệm vụ', 'Nhiệm vụ \'nv 1\' cần làm lại.\nLý do: lam lai di', 'phancong_task', 1, '2025-10-27 14:52:41'),
+(9, 6, 1, 'Yêu cầu làm lại nhiệm vụ', 'Nhiệm vụ \'nv 1\' cần làm lại.\nLý do: lam lai di', 'phancong_task', 1, '2025-10-27 14:59:43'),
+(10, 6, 1, 'Nhiệm vụ được duyệt', 'Bài nộp của bạn cho nhiệm vụ \'nv 1\' đã được duyệt và hoàn thành!\nNhận xét: ok', 'phancong_task', 1, '2025-10-27 15:00:03'),
+(11, 6, 1, 'Nhiệm vụ được duyệt', 'Bài nộp của bạn cho nhiệm vụ \'nv 1\' đã được duyệt và hoàn thành!\nNhận xét: ok rôi', 'phancong_task', 0, '2025-10-27 15:04:58'),
+(12, 6, 1, 'Phân công nhiệm vụ mới', 'Bạn đã được phân công nhiệm vụ: \'nv 2\'. Hạn hoàn thành: 2025-10-29', 'phancong_task', 0, '2025-10-27 15:11:06'),
+(13, 6, 1, 'Phân công nhiệm vụ mới', 'Bạn đã được phân công nhiệm vụ: \'nv 2\'. Hạn hoàn thành: 2025-10-29', 'phancong_task', 0, '2025-10-27 15:11:09'),
+(14, 6, 11, 'Được phân công nhiệm vụ', 'Bạn đã được phân công nhiệm vụ: \'nv 2\'', 'phancong_task', 0, '2025-10-27 15:13:18'),
+(15, 6, 1, 'Phân công nhiệm vụ mới', 'Bạn đã được phân công nhiệm vụ: \'nv 2\'. Hạn hoàn thành: 2025-10-29', 'phancong_task', 0, '2025-10-27 15:14:08'),
+(16, 6, 1, 'Phân công nhiệm vụ mới', 'Bạn đã được phân công nhiệm vụ: \'nv 2\'. Hạn hoàn thành: 2025-10-29', 'phancong_task', 0, '2025-10-27 15:16:04'),
+(17, 6, 11, 'Được phân công nhiệm vụ', 'Bạn đã được phân công nhiệm vụ: \'nv 2\'', 'phancong_task', 0, '2025-10-27 15:16:54'),
+(18, 6, 1, 'Phân công nhiệm vụ mới', 'Bạn đã được phân công nhiệm vụ: \'nv 3\'. Hạn hoàn thành: 2025-11-08', 'phancong_task', 0, '2025-10-27 15:18:01');
 
 -- --------------------------------------------------------
 
@@ -301,10 +390,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`ID_user`, `Email`, `MK`, `MK_hash`, `Ho_ten`, `ID_quyen`, `ID_phongban`, `Trang_thai`, `Ngay_tao`, `updated_at`) VALUES
-(1, 'user@gmail.com', '321', '$2y$10$0Mo0tPH0ZZPr29fILEbHLOnS1O9pRoDu9rP.tRLaV6tfsBljRizGy', 'USER', 3, 2, 'hoat_dong', '2025-10-08 23:25:09', NULL),
+(1, 'user@gmail.com', '321', '$2y$12$X17Dqqw/3qax1J/19nwWuOsjO4rEV7XPP2htBbahV.ymhIDsqiOVC', 'USER', 3, 2, 'hoat_dong', '2025-10-08 23:25:09', NULL),
 (3, 'admin@gmail.com', '321', '$2y$10$0Mo0tPH0ZZPr29fILEbHLOnS1O9pRoDu9rP.tRLaV6tfsBljRizGy', 'ADMIN', 1, 1, 'hoat_dong', '2025-10-08 23:25:09', NULL),
-(6, 'manager@gmail.com', '123', '$2y$10$0Mo0tPH0ZZPr29fILEbHLOnS1O9pRoDu9rP.tRLaV6tfsBljRizGy', 'MANAGER', 2, 3, 'hoat_dong', '2025-10-16 00:57:39', NULL),
-(10, '21004074@gmail.com', '123', '$2y$10$A5x116WFOtwMNuTq7it4zeH.psLPBhLmJbA4zh5pXFSkO7zJSrx/W', 'Nguyễn Thái Vinh', 1, 2, 'hoat_dong', '2025-10-16 05:50:40', '2025-10-18');
+(6, 'manager@gmail.com', '321', '$2y$10$0Mo0tPH0ZZPr29fILEbHLOnS1O9pRoDu9rP.tRLaV6tfsBljRizGy', 'MANAGER', 2, 3, 'hoat_dong', '2025-10-16 00:57:39', NULL),
+(11, 'user2@gmail.com', '321', '$2y$12$X17Dqqw/3qax1J/19nwWuOsjO4rEV7XPP2htBbahV.ymhIDsqiOVC', 'USER 2', 3, 2, 'hoat_dong', '2025-10-08 23:25:09', NULL);
 
 --
 -- Indexes for dumped tables
@@ -325,6 +414,12 @@ ALTER TABLE `dulieu_kpi`
   ADD PRIMARY KEY (`ID_dulieu`),
   ADD KEY `ID_phancong` (`ID_phancong`),
   ADD KEY `ID_nguoigui` (`ID_nguoigui`);
+
+--
+-- Indexes for table `dulieu_task`
+--
+ALTER TABLE `dulieu_task`
+  ADD PRIMARY KEY (`ID_dulieu`);
 
 --
 -- Indexes for table `kpi`
@@ -374,6 +469,18 @@ ALTER TABLE `quyen`
   ADD UNIQUE KEY `Ten_quyen` (`Ten_quyen`);
 
 --
+-- Indexes for table `tasks`
+--
+ALTER TABLE `tasks`
+  ADD PRIMARY KEY (`ID_task`);
+
+--
+-- Indexes for table `task_user`
+--
+ALTER TABLE `task_user`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `thongbao`
 --
 ALTER TABLE `thongbao`
@@ -398,19 +505,25 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `danhgia_kpi`
 --
 ALTER TABLE `danhgia_kpi`
-  MODIFY `ID_danhgia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `ID_danhgia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `dulieu_kpi`
 --
 ALTER TABLE `dulieu_kpi`
-  MODIFY `ID_dulieu` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `ID_dulieu` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `dulieu_task`
+--
+ALTER TABLE `dulieu_task`
+  MODIFY `ID_dulieu` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `kpi`
 --
 ALTER TABLE `kpi`
-  MODIFY `ID_kpi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `ID_kpi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `loai_kpi`
@@ -422,19 +535,19 @@ ALTER TABLE `loai_kpi`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `nhatky`
 --
 ALTER TABLE `nhatky`
-  MODIFY `ID_nhatky` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `ID_nhatky` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `phancong_kpi`
 --
 ALTER TABLE `phancong_kpi`
-  MODIFY `ID_Phancong` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=211;
+  MODIFY `ID_Phancong` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=212;
 
 --
 -- AUTO_INCREMENT for table `phongban`
@@ -449,16 +562,28 @@ ALTER TABLE `quyen`
   MODIFY `ID_quyen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `tasks`
+--
+ALTER TABLE `tasks`
+  MODIFY `ID_task` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
+-- AUTO_INCREMENT for table `task_user`
+--
+ALTER TABLE `task_user`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
 -- AUTO_INCREMENT for table `thongbao`
 --
 ALTER TABLE `thongbao`
-  MODIFY `ID_thongbao` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID_thongbao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `ID_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `ID_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Constraints for dumped tables

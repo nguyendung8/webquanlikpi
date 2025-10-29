@@ -670,6 +670,12 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{{ route('task.index') }}" class="{{ request()->routeIs('task.*') ? 'active' : '' }}">
+                            <i class="fas fa-tasks"></i>
+                            <span>Quản lý Tasks</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}">
                             <i class="fas fa-users"></i>
                             <span>Quản lý Người dùng</span>

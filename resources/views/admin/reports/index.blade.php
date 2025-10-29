@@ -350,7 +350,7 @@
             'dang_thuc_hien': 'Đang thực hiện',
             'hoan_thanh': 'Hoàn thành'
         };
-        return statusMap[item.Trang_thai] || item.Trang_thai;
+        return statusMap[item.trang_thai] || item.trang_thai;
     });
     const taskStatusCounts = tasksByStatusData.map(item => item.count);
 

@@ -259,7 +259,7 @@ class KpiController extends Controller
                     'Ty_le_hoanthanh' => $request->Ty_le_hoanthanh,
                     'Trang_thai' => $request->Trang_thai,
                     'ID_nguoithamdinh' => Auth::id(),
-                    'Ngay_thamdinh' => now(),
+                    'Ngay_thamdinh' => now()->setTimezone('Asia/Ho_Chi_Minh'),
                     'Nhan_xet' => $request->Nhan_xet
                 ]
             );

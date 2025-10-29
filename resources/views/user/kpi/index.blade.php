@@ -438,8 +438,8 @@
                         </span>
                         @endif
                     </div>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-info btn-sm" onclick="viewSubmissions({{ $phancong->ID_Phancong }})">
+                    <div class="d-flex gap-2" onclick="event.stopPropagation()">
+                        <button class="btn btn-info btn-sm" onclick="viewSubmissions({{ $phancong->ID_Phancong }}, event)">
                             <i class="fas fa-eye me-1"></i> Xem bài nộp
                         </button>
                         @if($phancong->Trang_thai == 'qua_han')
@@ -451,7 +451,7 @@
                                 <i class="fas fa-check-circle me-1"></i> Đã hoàn thành
                             </button>
                         @else
-                            <button class="btn btn-primary btn-sm" onclick="openSubmitModal({{ $phancong->ID_Phancong }}, '{{ $phancong->kpi->Ten_kpi }}', '{{ $phancong->kpi->Chi_tieu }}', '{{ $phancong->kpi->Donvi_tinh }}')">
+                            <button class="btn btn-primary btn-sm" onclick="openSubmitModal({{ $phancong->ID_Phancong }}, '{{ $phancong->kpi->Ten_kpi }}', '{{ $phancong->kpi->Chi_tieu }}', '{{ $phancong->kpi->Donvi_tinh }}', event)">
                                 <i class="fas fa-upload me-1"></i> Nộp bài
                             </button>
                         @endif
@@ -584,7 +584,10 @@
     }
 
     // Sửa function openSubmitModal để kiểm tra điều kiện
-    function openSubmitModal(id, name, target, unit) {
+    function openSubmitModal(id, name, target, unit, event) {
+        if (event) {
+            event.stopPropagation();
+        }
         // Kiểm tra xem KPI đã hoàn thành 100% chưa
         const kpiCard = document.querySelector(`[onclick*="openSubmitModal(${id}"]`).closest('.kpi-card');
 
@@ -615,7 +618,10 @@
         new bootstrap.Modal(document.getElementById('submitModal')).show();
     }
 
-    function viewSubmissions(id) {
+    function viewSubmissions(id, event) {
+        if (event) {
+            event.stopPropagation();
+        }
         document.getElementById('phancong_id').value = id; // Pass the ID to the modal
         new bootstrap.Modal(document.getElementById('submissionsModal')).show();
 

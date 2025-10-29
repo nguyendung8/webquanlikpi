@@ -151,7 +151,7 @@ class TasksController extends Controller
                         'managerName' => $manager->Ho_ten,
                         'userName' => $currentUser->Ho_ten,
                         'taskName' => $task->Ten_task,
-                        'submitDate' => now()->format('d/m/Y H:i'),
+                        'submitDate' => now()->setTimezone('Asia/Ho_Chi_Minh')->format('d/m/Y H:i'),
                         'evidenceText' => $request->minh_chung,
                         'hasFile' => $request->hasFile('file'),
                         'loginUrl' => url('/login')

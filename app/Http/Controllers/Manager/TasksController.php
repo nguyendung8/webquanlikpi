@@ -12,6 +12,7 @@ use App\Models\Tasks;
 use App\Models\User;
 use App\Models\DulieuTask;
 use App\Models\Thongbao;
+use App\Models\Nhatky;
 
 class TasksController extends Controller
 {
@@ -102,6 +103,14 @@ class TasksController extends Controller
                 'Da_xem' => 0
             ]);
 
+            // Ghi nhật ký
+            Nhatky::create([
+                'ID_nguoithuchien' => Auth::id(),
+                'Doi_tuong' => 'user',
+                'ID_doi_tuong' => $userId,
+                'Hanh_dong' => 'phan cong task'
+            ]);
+
             // Gửi email
             if ($user && $user->Email) {
                 try {
@@ -110,7 +119,7 @@ class TasksController extends Controller
                         'managerName' => $manager->Ho_ten,
                         'taskName' => $request->Ten_task,
                         'taskDescription' => $request->Mo_ta,
-                        'dateAssigned' => now()->format('d/m/Y H:i'),
+                        'dateAssigned' => now()->setTimezone('Asia/Ho_Chi_Minh')->format('d/m/Y H:i'),
                         'deadline' => $request->Ngay_het_han ? \Carbon\Carbon::parse($request->Ngay_het_han)->format('d/m/Y') : null,
                         'loginUrl' => url('/login')
                     ];
@@ -208,7 +217,7 @@ class TasksController extends Controller
                         'managerName' => $manager->Ho_ten,
                         'taskName' => $request->Ten_task,
                         'taskDescription' => $request->Mo_ta,
-                        'dateAssigned' => now()->format('d/m/Y H:i'),
+                        'dateAssigned' => now()->setTimezone('Asia/Ho_Chi_Minh')->format('d/m/Y H:i'),
                         'deadline' => $request->Ngay_het_han ? \Carbon\Carbon::parse($request->Ngay_het_han)->format('d/m/Y') : null,
                         'loginUrl' => url('/login')
                     ];
