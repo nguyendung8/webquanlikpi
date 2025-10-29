@@ -76,6 +76,7 @@ class TasksController extends Controller
         // Tạo task
         $task = Tasks::create([
             'Ten_task' => $request->Ten_task,
+            'ID_nguoi_phan_cong' => Auth::id(),
             'Mo_ta' => $request->Mo_ta,
             'Ngay_het_han' => $request->Ngay_het_han
         ]);

@@ -596,9 +596,14 @@
 
             // Form đánh giá với dữ liệu hiện tại
             const currentEvaluation = phancong.danhgia_kpi;
+            const isCompleted = currentEvaluation && parseFloat(currentEvaluation.Ty_le_hoanthanh) >= 100;
+            const disabledAttr = isCompleted ? 'disabled' : '';
+            const disabledClass = isCompleted ? 'opacity-75' : '';
+
             html += `
                 <div class="mt-4 p-3 bg-light rounded">
                     <h6><i class="fas fa-clipboard-check text-success me-2"></i>Đánh giá KPI:</h6>
+                    ${isCompleted ? '<div class="alert alert-success mb-3"><i class="fas fa-check-circle me-2"></i>KPI đã hoàn thành 100%, không thể chỉnh sửa!</div>' : ''}
                     <form id="evaluationForm">
                         <input type="hidden" id="evaluation_kpi_id" value="${phancong.ID_Phancong}">
                         <div class="row">
@@ -606,9 +611,9 @@
                                 <div class="mb-3">
                                     <label class="form-label">Kết quả thực hiện <span class="text-danger">*</span></label>
                                     <div class="input-group">
-                                        <input type="number" class="form-control" id="evaluation_result"
+                                        <input type="number" class="form-control ${disabledClass}" id="evaluation_result"
                                                min="0" step="0.01" required placeholder="Nhập số lượng"
-                                               value="${currentEvaluation ? currentEvaluation.Ketqua_thuchien || '' : ''}">
+                                               value="${currentEvaluation ? currentEvaluation.Ketqua_thuchien || '' : ''}" ${disabledAttr}>
                                         <span class="input-group-text">${phancong.kpi.Donvi_tinh}</span>
                                     </div>
                                     <small class="form-text text-muted">Số lượng đã hoàn thành</small>
@@ -617,16 +622,16 @@
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Tỷ lệ hoàn thành (%) <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control" id="evaluation_percentage"
+                                    <input type="number" class="form-control ${disabledClass}" id="evaluation_percentage"
                                            min="0" max="100" step="0.01" required
-                                           value="${currentEvaluation ? currentEvaluation.Ty_le_hoanthanh || '' : ''}">
+                                           value="${currentEvaluation ? currentEvaluation.Ty_le_hoanthanh || '' : ''}" ${disabledAttr}>
                                     <small class="form-text text-muted">Tự động tính: (Kết quả / Chỉ tiêu) × 100</small>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Trạng thái <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="evaluation_status" required>
+                                    <select class="form-select ${disabledClass}" id="evaluation_status" required ${disabledAttr}>
                                         <option value="cho_duyet" ${currentEvaluation && currentEvaluation.Trang_thai === 'cho_duyet' ? 'selected' : ''}>Chờ duyệt</option>
                                         <option value="dat" ${currentEvaluation && currentEvaluation.Trang_thai === 'dat' ? 'selected' : ''}>Đạt</option>
                                         <option value="khong_dat" ${currentEvaluation && currentEvaluation.Trang_thai === 'khong_dat' ? 'selected' : ''}>Không đạt</option>
@@ -636,14 +641,14 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Nhận xét</label>
-                            <textarea class="form-control" id="evaluation_comment" rows="3"
-                                      placeholder="Nhận xét về kết quả thực hiện...">${currentEvaluation ? currentEvaluation.Nhan_xet || '' : ''}</textarea>
+                            <textarea class="form-control ${disabledClass}" id="evaluation_comment" rows="3"
+                                      placeholder="Nhận xét về kết quả thực hiện..." ${disabledAttr}>${currentEvaluation ? currentEvaluation.Nhan_xet || '' : ''}</textarea>
                         </div>
                         <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-success" onclick="submitEvaluation()">
+                            <button type="button" class="btn btn-success" onclick="submitEvaluation()" ${disabledAttr}>
                                 <i class="fas fa-check me-1"></i> ${currentEvaluation ? 'Cập nhật đánh giá' : 'Tạo đánh giá'}
                             </button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="calculatePercentage()">
+                            <button type="button" class="btn btn-outline-secondary" onclick="calculatePercentage()" ${disabledAttr}>
                                 <i class="fas fa-calculator me-1"></i> Tính tỷ lệ tự động
                             </button>
                         </div>
