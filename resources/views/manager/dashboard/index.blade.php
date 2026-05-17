@@ -39,7 +39,7 @@
     }
 
     .stat-icon.total {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
     }
 
     .stat-icon.active {
@@ -93,7 +93,7 @@
     }
 
     .chart-title i {
-        color: #667eea;
+        color: #eac066;
     }
 
     .chart-container canvas {
@@ -123,7 +123,7 @@
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -265,7 +265,7 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'];
+    const colors = ['#eac066', '#F66600', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'];
 
     // KPI theo trạng thái
     const kpiByStatusData = @json($kpiByStatus);

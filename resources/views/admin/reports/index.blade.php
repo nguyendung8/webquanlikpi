@@ -67,19 +67,19 @@
     }
 
     .stat-icon.kpi {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
     }
 
     .stat-icon.users {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
     }
 
     .stat-icon.tasks {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
     }
 
     .stat-icon.evaluation {
-        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
     }
 
     .stat-number {

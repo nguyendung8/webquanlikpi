@@ -64,7 +64,7 @@
     }
 
     .btn-add {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
         color: white;
         border: none;
         border-radius: 8px;
@@ -170,7 +170,7 @@
     .user-badge {
         display: inline-block;
         padding: 4px 10px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
         color: white;
         border-radius: 15px;
         font-size: 11px;
@@ -190,7 +190,7 @@
     }
 
     #user_ids option:checked {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
         color: white;
     }
 
@@ -205,19 +205,19 @@
 
     .page-link {
         border: 1px solid #dee2e6;
-        color: #667eea;
+        color: #eac066;
         padding: 8px 12px;
     }
 
     .page-link:hover {
-        background: #667eea;
+        background: #eac066;
         color: white;
-        border-color: #667eea;
+        border-color: #eac066;
     }
 
     .page-item.active .page-link {
-        background: #667eea;
-        border-color: #667eea;
+        background: #eac066;
+        border-color: #eac066;
     }
 
     /* Modal styles */
@@ -227,7 +227,7 @@
     }
 
     .modal-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
         color: white;
         border-radius: 15px 15px 0 0;
         border: none;
@@ -283,7 +283,7 @@
     }
 
     .btn-save {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
         color: white;
         border: none;
     }

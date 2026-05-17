@@ -39,7 +39,7 @@
     }
 
     .stat-icon.total {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #667eea 0%, #F66600 100%);
     }
 
     .stat-icon.them {
@@ -216,7 +216,7 @@
         width: 35px;
         height: 35px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
         display: flex;
         align-items: center;
         justify-content: center;

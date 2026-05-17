@@ -47,8 +47,8 @@
         }
 
         .sidebar-logo .logo-icon {
-            width: 40px;
-            height: 40px;
+            width: 60px;
+            height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -84,7 +84,7 @@
         }
 
         .sidebar-menu a.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
             color: white;
         }
 
@@ -115,7 +115,7 @@
             padding: 8px 12px;
             border: 1px solid #dee2e6;
             border-radius: 8px;
-            color: #667eea;
+            color: #eac066;
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
@@ -123,16 +123,16 @@
         }
 
         .pagination .page-link:hover {
-            background: #667eea;
+            background: #eac066;
             color: white;
-            border-color: #667eea;
+            border-color: #eac066;
             transform: translateY(-2px);
             box-shadow: 0 3px 8px rgba(102, 126, 234, 0.3);
         }
 
         .pagination .page-item.active .page-link {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #667eea;
+            background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
+            border-color: #eac066;
             color: white;
             box-shadow: 0 3px 8px rgba(102, 126, 234, 0.4);
         }
@@ -190,7 +190,7 @@
         .header-logo .logo-icon {
             width: 35px;
             height: 35px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -216,7 +216,7 @@
 
         .search-bar input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #eac066;
             background: white;
         }
 
@@ -277,7 +277,7 @@
         .user-avatar {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -385,7 +385,7 @@
         }
 
         .performance-title i {
-            color: #667eea;
+            color: #eac066;
         }
 
         @media (max-width: 768px) {
@@ -649,7 +649,7 @@
             <div class="sidebar-header">
                 <div class="sidebar-logo">
                     <div class="logo-icon">
-                        <img width="40px" src="{{ asset('images/logo.png') }}" alt="Logo" class="img-fluid">
+                        <img width="80px" src="{{ asset('images/logo_img.png') }}" alt="Logo" class="img-fluid">
                     </div>
                     <span>Quản lý KPIs</span>
                 </div>

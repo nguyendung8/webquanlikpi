@@ -86,7 +86,7 @@
     }
 
     .btn-add {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
         color: white;
         border: none;
         border-radius: 8px;
@@ -222,7 +222,7 @@
     }
 
     .modal-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
         color: white;
         border-radius: 15px 15px 0 0;
         border: none;
@@ -278,7 +278,7 @@
     }
 
     .btn-save {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
         color: white;
         border: none;
     }

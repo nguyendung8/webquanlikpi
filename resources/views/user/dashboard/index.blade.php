@@ -118,7 +118,7 @@
     <div class="row">
         <div class="col-md-3">
             <div class="stats-card">
-                <div class="stats-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="stats-icon" style="background: linear-gradient(135deg, #eac066 0%, #F66600 100%);">
                     <i class="fas fa-clipboard-list"></i>
                 </div>
                 <div class="stats-number">{{ $kpiStats['total'] }}</div>

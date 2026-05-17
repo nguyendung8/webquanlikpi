@@ -5,7 +5,7 @@
 @push('styles')
 <style>
     body {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
         min-height: 100vh;
         display: flex;
         align-items: center;
@@ -18,7 +18,7 @@
         background: white;
         border-radius: 20px;
         box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        padding: 40px;
+        padding: 20px 40px 40px;
         width: 100%;
         max-width: 400px;
         margin: 20px;
@@ -83,7 +83,7 @@
     }
 
     .btn-login {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #eac066 0%, #F66600 100%);
         border: none;
         border-radius: 10px;
         padding: 12px 30px;
@@ -136,7 +136,7 @@
 @section('content')
 <div class="login-container">
     <div class="logo-section">
-        <img width="90px" src="{{ asset('images/logo.png') }}" alt="Logo" class="img-fluid">
+        <img width="140px" src="{{ asset('images/logo_img.png') }}" alt="Logo" class="img-fluid">
         <h2 class="login-title">Đăng nhập hệ thống</h2>
     </div>
 
